@@ -1050,7 +1050,7 @@ const S28 = [
 ];
 const TAB_OF = { 'Uni Điện Biên': 'Điện Biên - Uni Điện Biên', 'Uni Bình Dương': 'HCM - Uni Bình Dương', 'Uni Hải Phòng': 'Hải Phòng - Uni Kiến An', 'Uni Phú Thọ': 'Phú Thọ - Uni Vĩnh Yên', 'Uni Hà Tĩnh': 'Hà Tĩnh - Uni Hà Tĩnh', 'Uni Quảng Trị': 'Quảng Trị - Uni Đồng Hới', 'Uni Tây Ninh': 'Tây Ninh - Uni Tây Ninh', 'FSC Sóc Trăng': 'Cần Thơ - FSC Sóc Trăng', 'FSC Long Vân': 'Gia Lai - FSC Long Vân', 'FSC Long An': 'Tây Ninh - FSC Long An' };
 const EXTRA = ['An Giang - Sun Phu Quoc', 'Bắc Ninh - KĐT Hồng Hạc', 'Khánh Hòa - KĐT Mỹ Gia', 'Quảng Ninh - FSC Cao Xanh', 'HCM - Mini School', 'Đà Nẵng - FSC Tam Kỳ', 'Hưng Yên - Economy City', 'Nghệ An - Hưng Nguyên'];
-let FIELDS = LIVE ? [] : ['Tên dự án theo QĐ CTĐT', 'Diện tích DA (ha)', 'Quy mô', 'Tổng mức đầu tư', 'Tiến độ đầu tư', 'Mức ưu đãi XHH', 'Link map', 'Thời gian Chấp thuận NĐT', 'Loại hình pháp lý', 'Pháp lý đất đai', 'QĐ chấp thuận CTĐT', 'GCN đăng ký đầu tư', 'Tiến độ thực hiện dự án (năm)'].map(k => ({ k, show: true, ds: true })).concat([{ k: 'Chủ trương đầu tư', show: true, ds: false }, { k: 'Địa chỉ', show: true, ds: false }, { k: 'GCN QSDĐ', show: true, ds: false }, { k: 'HĐ thuê đất', show: true, ds: false }, { k: 'QĐ cho thuê đất', show: true, ds: false }]);
+let FIELDS = LIVE ? [] : ['Tên dự án theo QĐ CTĐT', 'Diện tích DA (ha)', 'Quy mô', 'Tổng mức đầu tư', 'QĐ chấp thuận CTĐT', 'GCN đăng ký đầu tư', 'Thời gian Chấp thuận NĐT', 'Tiến độ thực hiện dự án (năm)', 'Tiến độ đầu tư', 'Mức ưu đãi XHH', 'Link map', 'Loại hình pháp lý', 'Pháp lý đất đai'].map(k => ({ k, show: true, ds: true })).concat([{ k: 'Chủ trương đầu tư', show: true, ds: false }, { k: 'Địa chỉ', show: true, ds: false }, { k: 'GCN QSDĐ', show: true, ds: false }, { k: 'HĐ thuê đất', show: true, ds: false }, { k: 'QĐ cho thuê đất', show: true, ds: false }]);
 const PROJ = [];
 if (!LIVE) S28.forEach((r, i) => {
   const ten = TAB_OF[r[0]] || (r[1] + ' - ' + r[0]);
@@ -2503,7 +2503,7 @@ const soVN = v => { let t = String(v == null ? '' : v).trim().replace(/\s/g, '')
 /* Tổng mức đầu tư: nhập theo đồng, hiển thị/thống kê theo tỷ, ký hiệu B (billion = tỷ). VD 125.000.000.000 → 125 B; số đã nhỏ hơn 1 triệu coi là đang ghi theo tỷ */
 const laTien = n => /tong muc dau tu|von dau tu/.test(boDau(String(n || '')));
 const soTien = v => { const n = soVN(v); return n == null ? null : Math.abs(n) >= 1e6 ? n / 1e9 : n; };
-const hienTien = v => { const t = soTien(v); return t == null ? String(v == null ? '' : v) : t.toLocaleString('vi-VN', { maximumFractionDigits: Math.abs(t) >= 100 ? 0 : Math.abs(t) >= 10 ? 1 : 2 }) + ' B'; };
+const hienTien = v => { const t = soTien(v); return t == null ? String(v == null ? '' : v) : t.toLocaleString('vi-VN', { maximumFractionDigits: 2 }) + ' B'; };   // làm tròn 2 chữ số sau dấu phẩy (VD 663,99 B)
 const CHISO_GOC = new Set(Object.keys(CHISO).concat(['gcn', 'hdt', 'qdt', 'dot']));
 function dongBoChiSo() {
   Object.keys(CHISO).filter(k => k.startsWith('f:')).forEach(k => delete CHISO[k]);
@@ -2512,7 +2512,7 @@ function dongBoChiSo() {
   (FIELDS || []).forEach(f => { const kb = boDau(f.k).replace(/[^a-z0-9]+/g, ' ').trim(); if (!f.k || bo.test(kb) || laLoaiDT(kb) || f.ds === false && !f.show) return;
     const g = p => giaTriTruong(p, f), co = PROJ.filter(p => String(g(p) == null ? '' : g(p)).trim()), so = co.filter(p => soVN(g(p)) != null), nl = kieuNL(f.k), dv = dvCua(f), m = mau[i++ % mau.length];
     if (nl) { CHISO['f:n:' + f.k] = ['Số ' + KIEU_NL[nl].ten + ' ' + f.k, m, p => docNL(nl, g(p)).length, 0]; CHISO['f:c:' + f.k] = ['Dự án có ' + f.k, m, p => docNL(nl, g(p)).length ? 1 : 0, 0]; return; }
-    if (laTien(f.k) && so.length) { CHISO['f:s:' + f.k] = [(/^tong/.test(boDau(f.k)) ? f.k : 'Tổng ' + f.k) + ' (B = tỷ đồng)', m, p => soTien(g(p)) || 0, 1]; return; }
+    if (laTien(f.k) && so.length) { CHISO['f:s:' + f.k] = [(/^tong/.test(boDau(f.k)) ? f.k : 'Tổng ' + f.k) + ' (B = tỷ đồng)', m, p => soTien(g(p)) || 0, 2]; return; }
     if (so.length && so.length >= co.length * .6) { CHISO['f:s:' + f.k] = ['Tổng ' + f.k + (dv && !/\(/.test(f.k) ? ' (' + dv + ')' : ''), m, p => soVN(g(p)) || 0, so.some(p => soVN(g(p)) % 1) ? 2 : 0]; return; }
     CHISO['f:c:' + f.k] = ['Dự án có ' + f.k, m, p => String(g(p) == null ? '' : g(p)).trim() ? 1 : 0, 0]; });
 }
@@ -2999,7 +2999,9 @@ let pmCheDo = '', MO_COT_DA = false;   // '' xem · 'sua' chỉnh sửa · 'moi'
 const CORE_PM = ['Tên dự án', 'Khu vực', 'Tỉnh thành', 'Loại hình pháp lý', 'Loại CTĐT', 'Chấp thuận NĐT', 'Loại điểm trường'];
 const laCorePM = f => { const l = lkF(f); return boDau(f.k) === boDau('Tên dự án') || boDau(f.k) === boDau(TRUONG_CTDT) || !!(l && ['ten', 'tinh', 'vung', 'pl', 'duyet', 'plDat'].concat(LOAI_DT).includes(l.id)); };
 const DV_MAC = [[/thuc hien du an \(nam\)|\(nam\)$/, 'năm'], [/\(ha\)|dien tich|ban giao/, 'ha'], [/\(m2\)|\(m²\)/, 'm²'], [/tien do dau tu|thoi gian thuc hien|gia han|so thang/, 'tháng'], [/tong muc dau tu/, 'đồng'], [/quy mo/, 'HS, SV'], [/^ct |cong trinh/, 'công trình']];
-const dvCua = f => f.dv != null ? f.dv : ((DV_MAC.find(([r]) => r.test(boDau(f.k))) || [])[1] || '');
+/* Diện tích DA, Đã bàn giao: dữ liệu luôn lưu và hiện theo ha, đơn vị cố định (không theo đơn vị đã đặt tay) */
+const dvCoDinh = f => ['qh', 'bg'].includes((lkF(f) || {}).id) ? 'ha' : '';
+const dvCua = f => dvCoDinh(f) || (f.dv != null ? f.dv : ((DV_MAC.find(([r]) => r.test(boDau(f.k))) || [])[1] || ''));
 function pmChon(p) {
   pmCur = p; pmCheDo = ''; pmDirty = false; pmSua = {}; pmGC = {}; napPmPl(); $('#pmPl').value = p ? p.pl || '' : '';
   veCore(); veFields(); veNutPM(); veTongPM();
@@ -3077,6 +3079,7 @@ function veFields() {
     if (lk && lk.id === 'td8' && p && !(khoaS in pmSua) && String(v).trim() === '') { const fc = fCTDT(), a = fc ? soLanDC('i:' + fc.k in pmSua ? pmSua['i:' + fc.k] : giaTriTruong(p, fc)) : null; if (a != null) { tuQD = String(a); v = tuQD; if (sua) { pmSua[khoaS] = tuQD; pmDirty = true; } } }
     if (lk && lk.id === 'ngayCT' && p && !(khoaS in pmSua)) { const a = ngayQDNDT(p); if (a && (!v || (/^\d{4}$/.test(String(v).trim()) && a.endsWith(String(v).trim()) && a !== String(v).trim()))) { tuQD = a; v = a; if (sua) { pmSua[khoaS] = a; pmDirty = true; } } }
     if (!sua && p && laTien(f.k) && String(v).trim()) v = hienTien(v);
+    const laT = sua && laTien(f.k); if (laT && /^[\d.\s]+$/.test(String(v).trim()) && String(v).trim()) v = chamNghin(v);
     const o = cauTruc ? '<input class="val" type="text" data-k="val" disabled placeholder="' + (lk ? (lk.ro ? 'Tự lấy, ' + lk.ro : 'Liên thông với Danh sách dự án') : 'Chọn dự án để xem, nhập') + '">'
       : lk && lk.chon ? '<select class="val" data-k="val"' + (sua ? '' : ' disabled') + '>' + (v ? '' : '<option value=""></option>') + lk.chon.map(x => '<option' + (x === v ? ' selected' : '') + '>' + esc(x) + '</option>').join('') + '</select>'
       : !lk && kieuNL(f.k) ? '<div class="val nlval' + (sua ? '' : ' xem') + '" title="' + esc(String(v).split(';').map(x => x.trim()).filter(Boolean).join('\n')) + '"><span class="nltt">' + esc(tomTatNL(kieuNL(f.k), v) || (sua ? '' : '')) + '</span>' + (sua ? '<button type="button" class="s" data-nl="' + i + '">' + (v ? ic('edit') + 'Sửa' : ic('plus') + 'Nhập') + '</button>' : '') + '</div>'
@@ -3084,11 +3087,11 @@ function veFields() {
       : lk && lk.id === 'thoiGianTH' && p && (tq = thangQD(p, layPM)) ? (tq.chonDuoc && sua ? '<select class="val" data-tdtheo title="Tiến độ đầu tư tính theo số liệu nào">' + ['ctdt', 'gcndt'].map(k => '<option value="' + k + '"' + (k === tq.dung ? ' selected' : '') + '>' + tq[k === 'ctdt' ? 'tA' : 'tB'] + ' tháng · theo ' + TEN_NL[k] + '</option>').join('') + '</select>'
         : '<input class="val" type="text" data-k="val" disabled value="' + esc(tq.tong + ' tháng' + (tq.lech ? ' (theo ' + TEN_NL[tq.dung] + ')' : '')) + '" title="' + esc(goiYTH(tdCua(p) || [], p)) + '">')
       : lk && (lk.id === 'td6' || lk.id === 'td7') && sua && !khoaRO ? '<div class="val thval"><input class="val" type="text" data-k="val" inputmode="numeric" placeholder="mm/yyyy" value="' + esc(v) + '"><button type="button" class="i" data-thang title="Chọn tháng/năm">' + ic('cal') + '</button></div>'
-      : '<input class="val' + (tuQD ? ' tudien' : '') + '" type="text" data-k="val" value="' + esc(v) + '"' + (tuQD ? ' title="' + (lk && lk.id === 'td8' ? 'Tự đếm theo số lần điều chỉnh trong trường QĐ chấp thuận CTĐT; sửa được' : 'Tự lấy theo ngày quyết định chấp thuận nhà đầu tư trong hồ sơ; sửa được') + '"' : '') + (!sua || khoaRO ? ' disabled' : '') + (khoaRO ? ' title="' + esc('Tự lấy, ' + (lk.ro || 'tự tính = Bắt đầu + Thời gian thực hiện ban đầu + Thời gian gia hạn')) + '"' : '') + '>';
+      : '<input class="val' + (tuQD ? ' tudien' : '') + '" type="text" data-k="val"' + (laT ? ' data-tien inputmode="numeric" placeholder="VD: 663.989.000.000"' : '') + ' value="' + esc(v) + '"' + (tuQD ? ' title="' + (lk && lk.id === 'td8' ? 'Tự đếm theo số lần điều chỉnh trong trường QĐ chấp thuận CTĐT; sửa được' : 'Tự lấy theo ngày quyết định chấp thuận nhà đầu tư trong hồ sơ; sửa được') + '"' : '') + (!sua || khoaRO ? ' disabled' : '') + (khoaRO ? ' title="' + esc('Tự lấy, ' + (lk.ro || 'tự tính = Bắt đầu + Thời gian thực hiện ban đầu + Thời gian gia hạn')) + '"' : '') + '>';
     const g = p ? (pmGC[f.k] != null ? pmGC[f.k] : gcCua(p, f.k)) : '';
     return '<div class="frow lk' + (hien ? '' : ' off') + '"' + (cauTruc ? ' draggable="true"' : '') + ' data-i="' + i + '"><span class="drag"' + (cauTruc ? ' title="Kéo để sắp xếp"' : ' style="visibility:hidden"') + '>⋮⋮</span>'
       + '<input type="text" data-k="name" value="' + esc(f.k) + '"' + (cauTruc && ad ? '' : ' disabled') + ' aria-label="Tên trường">' + o
-      + ((cauTruc || sua) && ad ? '<input class="dv" type="text" data-k="dv" value="' + esc(dvCua(f)) + '" placeholder="—" aria-label="Đơn vị ' + esc(f.k) + '">' : '<span class="dv">' + esc(laTien(f.k) && p && !sua ? 'tỷ đồng' : dvCua(f)) + '</span>')
+      + ((cauTruc || sua) && ad && !dvCoDinh(f) ? '<input class="dv" type="text" data-k="dv" value="' + esc(dvCua(f)) + '" placeholder="—" aria-label="Đơn vị ' + esc(f.k) + '">' : '<span class="dv">' + esc(laTien(f.k) && p && !sua ? 'tỷ đồng' : dvCua(f)) + '</span>')
       + (p || pmCheDo === 'moi' ? '<input class="gc" type="text" data-k="gc" placeholder="' + (g || sua ? 'Ghi chú' : '') + '" value="' + esc(g) + '"' + (sua ? '' : ' disabled') + ' aria-label="Ghi chú">' + '<button type="button" class="i gcnut' + (g ? ' cogc' : '') + (g || sua ? '' : ' trong') + '" data-gcnut="1" title="Ghi chú" aria-label="Ghi chú"' + (g || sua ? '' : ' tabindex="-1"') + '>' + ic('ghichu') + '</button>' : '<input class="gc" type="text" disabled placeholder="Ghi chú">')
       + '<button class="i' + (rieng ? ' on' : '') + '" data-eye="' + i + '" title="' + (hien ? 'Đang hiện' : 'Đang ẩn') + ' trong Thông tin DA' + (p ? (rieng ? ' (riêng dự án này)' : ' (theo cài đặt chung)') : '') + ', bấm để ' + (hien ? 'ẩn' : 'hiện') + '">' + ic(hien ? 'eye' : 'eyeoff') + '</button>'
       + (isAdmin() ? '<button class="i" data-del="' + i + '" title="Xóa trường ' + esc(f.k) + '">' + ic('trash') + '</button>' : '<span></span>') + '</div>'; }).join('');
@@ -3114,6 +3117,11 @@ $('#pmFields').addEventListener('click', e => { if (pmCheDo || e.target.closest(
   const q = r.getBoundingClientRect(), w = Math.min(420, innerWidth - 16); d.style.width = w + 'px'; d.style.left = Math.max(8, Math.min(q.left + 30, innerWidth - w - 8)) + 'px'; d.style.top = (q.bottom + 4 + d.offsetHeight < innerHeight ? q.bottom + 4 : Math.max(8, q.top - 4 - d.offsetHeight)) + 'px';
   setTimeout(() => document.addEventListener('pointerdown', function f(ev) { if (!d.contains(ev.target)) { d.remove(); document.removeEventListener('pointerdown', f); } }), 0); });
 $('#pmFields').addEventListener('change', e => { const s = e.target.closest('[data-tdtheo]'); if (!s || !pmCur) return; const p = pmCur; datTheoTD(p, s.value, g => { const kk = 'i:' + g.k; return kk in pmSua ? pmSua[kk] : giaTriTruong(p, g); }); veFields(); });
+/* Tổng mức đầu tư (đồng): tự thêm dấu chấm hàng nghìn khi gõ, giữ vị trí con trỏ */
+const chamNghin = v => String(v).replace(/\D/g, '').replace(/^0+(?=\d)/, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+$('#pmFields').addEventListener('input', e => { const ip = e.target; if (!ip.matches || !ip.matches('input[data-tien]') || /,/.test(ip.value)) return;
+  const c = ip.selectionStart == null ? ip.value.length : ip.selectionStart, so = ip.value.slice(0, c).replace(/\D/g, '').length, m = chamNghin(ip.value); if (m === ip.value) return; ip.value = m;
+  let k = 0, d = 0; while (k < m.length && d < so) { if (/\d/.test(m[k])) d++; k++; } try { ip.setSelectionRange(k, k); } catch (er) { } }, true);
 /* Danh sách dự án: chạm vào ô Tiến độ đầu tư để xem Bắt đầu, Kết thúc, thời gian ban đầu, gia hạn (điện thoại không có rê chuột) */
 document.addEventListener('click', e => { const td = e.target.closest && e.target.closest('#daTb td[data-k="thoiGianTH"][title]'); if (!td) return; const cu = document.querySelector('.gcpop'); if (cu) { cu.remove(); if (cu._b === td) return; }
   const d = document.createElement('div'); d.className = 'gcpop'; d._b = td; d.style.zIndex = 300; d.innerHTML = '<b>Tiến độ đầu tư ' + esc(td.textContent) + '</b><div style="white-space:pre-line">' + esc(td.title) + '</div>'; document.body.appendChild(d);
