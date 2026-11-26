@@ -483,7 +483,7 @@ button.dang{opacity:.65;pointer-events:none;filter:grayscale(1)}
 #rqRefresh.dang .ic{animation:quay .8s linear infinite}@keyframes quay{to{transform:rotate(360deg)}}
 .ctls{cursor:help;border-bottom:1px dashed var(--line)}.ctls .cti{color:var(--brand);vertical-align:-2px}.ctls .cti .ic{width:14px;height:14px}#tip td,#tip th{max-width:260px;white-space:normal;word-break:break-word}#tip th{white-space:nowrap}.ctbang td{word-break:break-word}.ctbang th{white-space:nowrap}
 #pmRen,#pmAdd{gap:6px;justify-content:center}.chungan{display:none}@media(max-width:900px){.chupc{display:none}.chungan{display:inline}}@media(max-width:340px){.chungan{display:none}}
-#pmFields .frow.lk input[data-k=name]{border-left:3px solid var(--brand)}#pmFields .i.on{border-color:var(--brand);color:var(--brand)}
+#pmFields .frow.lk input[data-k=name]{border-left:3px solid var(--brand)}#pmFields .i.on{position:relative}#pmFields .i.on::after{content:"";position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--brand)}
 .pmhang{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:end;margin-top:8px}.pmhang .pmda{min-width:0}.pmhang>button{height:40px;gap:6px;justify-content:center;white-space:nowrap}.pmhang .pmn{display:none}
 @media(max-width:900px){.pmhang .pmt{display:none}.pmhang .pmn{display:inline}#pmRen .pmt{display:inline}}
 @media(max-width:640px){#pmRen{width:40px;padding:0}#pmRen .pmt{display:none}.pmhang>button{padding-inline:10px}}
@@ -502,6 +502,14 @@ button.dang{opacity:.65;pointer-events:none;filter:grayscale(1)}
 .onlds{display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:60;min-width:360px;max-height:60vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.14);padding:8px;color:var(--ink)}.onl:hover .onlds,.onl:focus-within .onlds{display:block}.onlds .r1{display:flex;justify-content:space-between;gap:10px;padding:6px 8px;border-radius:8px;font-size:13px}.onlds .r1:hover{background:var(--soft)}.onlds small{color:var(--mute);white-space:nowrap}.onlds h4{margin:2px 8px 6px;font-size:12px;color:var(--mute);font-weight:600}.onlds .r1>span{white-space:nowrap}
 @media(max-width:640px) and (orientation:portrait){.onl{display:none!important}}@media(max-width:900px){.onl{margin-right:6px;padding:0 10px;height:32px}.onl .onlt{display:none}.onlds{min-width:280px}}.onl.chiso .onlds{display:none!important}
 #daTb th:first-child,#daTb td:first-child{position:sticky;left:0;z-index:3;background:var(--panel)}#daTb th[data-cot=ten],#daTb td[data-k=ten]{position:sticky;left:40px;z-index:3;background:var(--panel);box-shadow:1px 0 0 var(--line)}#daTb thead th:first-child,#daTb thead th[data-cot=ten]{z-index:5}#daTb tr.done td:first-child,#daTb tr.done td[data-k=ten]{background:var(--ok-bg,#e6f4ec)}
+
+/* Thống kê trên điện thoại: bộ lọc 2 dòng thẳng cột — Vùng miền | Tỉnh thành; Năm | Pháp lý (cột phải rộng hơn cho Pháp lý) */
+@media (max-width:760px){.tkloc .g4{display:grid!important;grid-template-columns:minmax(0,42fr) minmax(0,58fr)!important;gap:12px 8px!important}.tkloc .ms .pan{min-width:210px}.tkloc .g4>:nth-child(2) .ms .pan,.tkloc .g4>:nth-child(4) .ms .pan{left:auto;right:0}}
+/* Trường đang ẩn: làm mờ giống nhau ở mọi chế độ và mọi kiểu ô (ô nhập, ô chọn, ô nhiều lần), tên trường và các nút giữ rõ */
+#pmFields .frow.off>:not(.drag):not([data-k=name]):not(button){opacity:.45!important}#pmFields .frow.off>:not(input) input,#pmFields .frow.off>:not(input) select{opacity:1!important}
+/* Thông tin dự án: cột tên trường căn trái, sát cột giá trị */
+th.ttn{width:1%;white-space:nowrap;text-align:left!important;padding-right:20px!important;position:static!important;box-shadow:none!important}@media (max-width:640px){th.ttn{white-space:normal;width:38%;padding-right:10px!important}}
+@media (min-width:1100px){#tkFold{display:none!important}}
 </style>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
@@ -1159,7 +1167,9 @@ function ganSuaTen(el, goc) {
 }
 const apTenBang = () => $$('.view h2:not([id]):not([data-t]), .view h3:not([id]):not([data-t])').forEach(h => { if (h.closest('#charts')) return; if (!h.dataset.goc && h.children.length) return; ganSuaTen(h, h.dataset.goc || h.textContent.trim()); });
 function openModal(title, bodyHtml, { size = '', foot = [], top = [], onClose } = {}) {
-  $('#mTitle').textContent = title; if (size === 'xl') ganSuaTen($('#mTitle'), title); else { $('#mTitle').classList.remove('suatd'); delete $('#mTitle').dataset.goc; } $('#mBody').innerHTML = bodyHtml;
+  $('#mTitle').textContent = title; if (size === 'xl') ganSuaTen($('#mTitle'), title); else { $('#mTitle').classList.remove('suatd'); delete $('#mTitle').dataset.goc; }
+  { const cu = $('#mBody'), moi = cu.cloneNode(false); cu.replaceWith(moi); }   // thân hộp thoại mới mỗi lần mở: bỏ hết sự kiện của hộp thoại trước (tránh 1 lần bấm chạy nhiều lần)
+  $('#mBody').innerHTML = bodyHtml;
   /* Ghi chú dài cuối bảng: thu gọn thành "Ghi chú ⓘ", đưa chuột (hoặc chạm) vào mới hiện nội dung, nhường chỗ cho bảng */
   $$('#mBody .fillcol > p.note').forEach(p => { const g = document.createElement('div'); g.className = 'ghichu'; g.innerHTML = '<span class="gcnut" tabindex="0" role="button" aria-label="Xem ghi chú"><span class="gctx">Ghi chú</span> <span class="gci">i</span></span><div class="gcnd" role="tooltip"></div>'; g.lastChild.innerHTML = p.innerHTML; p.replaceWith(g); });
   $('#mbox').className = 'mbox ' + size;
@@ -1459,12 +1469,12 @@ function boSungPL(x) {
 let TRUONG_DA = {};
 const hienTruong = (p, f) => p && TRUONG_DA[p.ten] && f.k in TRUONG_DA[p.ten] ? TRUONG_DA[p.ten][f.k] : f.show;
 function thongTinDA(p) {
-  const rows = [['Tên dự án', p.ten], ...hienDS().map(([f]) => f).filter(f => hienTruong(p, f)).map(f => { const v = giaTriTruong(p, f), dv = dvCua(f); return [f.k, laTien(f.k) && v ? hienTien(v) : v && dv && /^[\d.,\s]+$/.test(String(v).trim()) ? String(v).trim() + ' ' + dv : v]; })];   // kèm đơn vị (ha, tháng, năm…) để sao chép/chia sẻ đủ thông tin
+  const rows = [['Tên dự án', p.ten], ...hienDS().map(([f]) => f).filter(f => hienTruong(p, f)).map(f => { const v0 = giaTriTruong(p, f), v = ['ctdt', 'gcndt'].includes(kieuNL(f.k)) ? tomTatNL(kieuNL(f.k), v0) : ['qh', 'bg'].includes((lkF(f) || {}).id) && v0 !== '' ? haHien(p[(lkF(f) || {}).id]) : v0, dv = dvCua(f); return [tenF(f), laTien(f.k) && v ? hienTien(v) : v && dv && /^[\d.,\s]+$/.test(String(v).trim()) ? String(v).trim() + ' ' + dv : v]; })];   // kèm đơn vị (ha, tháng, năm…) để sao chép/chia sẻ đủ thông tin
   const txt = rows.map(r => '- ' + r[0] + ': ' + r[1] + (gcCua(p, r[0]) ? ' (Ghi chú: ' + gcCua(p, r[0]) + ')' : '')).join('\n');
   const sh = mkBtn(ic('share'), () => { const tieu = 'Thông tin dự án ' + p.ten;   // điện thoại: bảng chia sẻ của máy (Zalo, email…); máy tính: mở thư điện tử soạn sẵn
     if (dtChiaSe() && navigator.share) navigator.share({ title: tieu, text: txt }).catch(() => { }); else location.href = 'mailto:?subject=' + encodeURIComponent(tieu) + '&body=' + encodeURIComponent(txt); }, 'i'); sh.title = 'Chia sẻ thông tin dự án'; sh.setAttribute('aria-label', 'Chia sẻ thông tin dự án');
   const cp = mkBtn(ic('copy'), () => { (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => toast('Đã sao chép thông tin dự án.'), () => toast('Không sao chép được trên thiết bị này.')); }, 'i'); cp.title = 'Sao chép thông tin';
-  openModal('Thông tin dự án', '<table><tbody>' + rows.map(r => '<tr><th style="width:38%;position:static;box-shadow:none">' + esc(r[0]) + '</th><td>' + (!r[1] ? '<span class="note">Chưa cập nhật</span>' : /^https?:\/\//i.test(String(r[1]).trim()) ? '<a href="' + esc(String(r[1]).trim()) + '" target="_blank" rel="noopener">' + (/map/i.test(r[0]) ? 'Mở bản đồ' : esc(r[1])) + '</a>' : esc(r[1])) + (gcCua(p, r[0]) ? ' <span class="goiy" tabindex="0" data-goiy="' + esc('Ghi chú: ' + gcCua(p, r[0])) + '">i</span>' : '') + '</td></tr>').join('') + '</tbody></table>', { top: [sh, cp] });
+  openModal('Thông tin dự án', '<table><tbody>' + rows.map(r => '<tr><th class="ttn">' + esc(r[0]) + '</th><td>' + (!r[1] ? '<span class="note">Chưa cập nhật</span>' : /^https?:\/\//i.test(String(r[1]).trim()) ? '<a href="' + esc(String(r[1]).trim()) + '" target="_blank" rel="noopener">' + (/map/i.test(r[0]) ? 'Mở bản đồ' : esc(r[1])) + '</a>' : esc(r[1])) + (gcCua(p, r[0]) ? ' <span class="goiy" tabindex="0" data-goiy="' + esc('Ghi chú: ' + gcCua(p, r[0])) + '">i</span>' : '') + '</td></tr>').join('') + '</tbody></table>', { top: [sh, cp] });
 }
 $('#btnInfo').onclick = () => { const p = projById($('#btnInfo').dataset.p); if (p) thongTinDA(p); };
 function cauNoiDung(x) { const v = { 'Quyết định': 'ban hành Quyết định', 'Văn bản': 'có văn bản', 'Công văn': 'có văn bản', 'Tờ trình': 'trình', 'Báo cáo': 'có báo cáo', 'Biên bản': 'lập biên bản', 'Thông báo': 'thông báo', 'Giấy chứng nhận': 'cấp Giấy chứng nhận', 'Hợp đồng': 'ký hợp đồng' }[x.loai] || 'phát hành ' + x.loai.toLowerCase(); return x.cq + ' ' + v + (x.so ? ' số ' + x.so : '') + ' ' + x.nd.charAt(0).toLowerCase() + x.nd.slice(1); }
@@ -2288,6 +2298,7 @@ const thangNam = n => { const y = Math.floor(n / 12), m = n % 12; return (y ? y 
 function moTaTienDo(r) { if (!r) return ''; const a = thangSo(r[6]), b = thangSo(r[7]); if (a == null || b == null) return ''; const n = b - a, gh = giaHan(r);
   return mmyy(a) + ' – ' + mmyy(b) + ' · ' + n + ' tháng' + (n >= 12 ? ' (' + thangNam(n) + ')' : '') + (gh.length ? ', đã gồm gia hạn ' + gh.length + ' lần: ' + gh.map(x => x + ' tháng').join(' + ') : ''); }
 function soThangTD(r) { if (!r) return ''; const a = thangSo(r[6]), b = thangSo(r[7]); if (a != null && b != null) return (b - a) + ' tháng'; const bd = Number(r[15]); return bd > 0 ? bd + giaHan(r).reduce((x, y) => x + y, 0) + ' tháng' : ''; }
+const haHien = m2 => m2 == null ? '' : (m2 / 1e4).toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });   // hiển thị diện tích: luôn 2 chữ số thập phân, như Danh sách dự án
 const fmtHaTT = m2 => m2 == null ? '' : (m2 / 1e4).toLocaleString('vi-VN', { maximumFractionDigits: 4 });
 const LK_DS = [
   { id: 'qh', ten: TEN_QH, g: p => fmtHaTT(p.qh), s: (p, v) => { const n = docHa(v); p.qh = n == null ? null : Math.round(n * 1e4); } },
@@ -2299,12 +2310,15 @@ const LK_DS = [
   { id: 'duyet', ten: ['Đã được chấp thuận nhà đầu tư', 'Đã CT NĐT', 'Đã chấp thuận NĐT'], ro: 'đổi bằng nút Chỉnh sửa dự án', g: p => p.duyet ? loaiNDT(p) : 'Chưa' },
   ...LOAI_DT.map(k => ({ id: k, dt: 1, ten: [k, 'Điểm trường ' + k], ro: 'đổi bằng nút Chỉnh sửa dự án', g: p => (p.loai || []).includes(k) ? 'Có' : '' })),
   { id: 'plDat', ten: ['Pháp lý đất đai'], ro: 'theo cột GCN QSDĐ, HĐ thuê đất và QĐ cho thuê đất ở Danh sách dự án', g: p => { const v = k => (p.info || {})[khoaInfo(p, k)]; const qd = docDotQD(v('QĐ cho thuê đất')); return coGiaTri(v('GCN QSDĐ')) ? 'Đã có sổ' : daKyHD(v('HĐ thuê đất')) ? 'Đã ký HĐ thuê đất' : qd.length ? 'Đã có QĐ cho thuê đất (' + qd.length + ' đợt)' : ''; } },
-  { id: 'thoiGianTH', ten: ['Tiến độ đầu tư', 'Tiến độ thực hiện dự án', 'Thời gian thực hiện dự án'], ro: 'tự tính từ Bắt đầu, Kết thúc và Thời gian gia hạn ở bảng tiến độ', g: p => tienDoDT(p, tdCua(p)) },
+  { id: 'thoiGianTH', ten: ['Tiến độ đầu tư', 'Thời gian thực hiện dự án'], ro: 'tự tính từ Bắt đầu, Kết thúc và Thời gian gia hạn ở bảng tiến độ', g: p => tienDoDT(p, tdCua(p)) },
   ...[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(c => ({ id: 'td' + c, ten: c === 4 ? [TDCOL[c], 'Mức ưu đãi XHH'] : [TDCOL[c]], td: c, chon: c === 5 ? TT_XD : null, roF: c === 7 ? p => ketThucTuTinh(tdCua(p)) : null, g: p => { const r = tdCua(p); return !r ? '' : c === 5 ? chuanTT(r[5], r[11]) : r[c] == null ? '' : c === 6 || c === 7 ? hienNgayTD(r[c]) : String(r[c]); },
     s: (p, v) => { let r = tdCua(p); if (!r) { if (!String(v).trim()) return; r = chenTD(p).r; } const so = c >= 8 && c <= 11 || c === 15; if (c === 7 && ketThucTuTinh(r)) return; r[c] = so ? (String(v).trim() === '' ? null : Number(String(v).replace(/\./g, '').replace(',', '.'))) : c === 6 || c === 7 ? chuanNgayTD(v) : v; chuanTD(r); } })),
   { id: 'cl', ten: ['Số tháng còn lại'], ro: 'tự tính từ ngày kết thúc', g: p => { const r = tdCua(p); return r && !daXong(r) && conLai(r) != null ? String(conLai(r)) : ''; } }
 ];
 const lkCua = k => LK_DS.find(l => l.ten.some(t => boDau(t) === boDau(k)));
+/* Trường liên thông có cột trên tab ID DM (Diện tích DA, Đã bàn giao, ngày chấp thuận NĐT, Loại hình pháp lý): đổi tên trên app thì đổi luôn tên cột trên sheet;
+   tên mới được nhớ (COT_DA.lkTen) để vẫn nhận ra là trường liên thông */
+function apTenLK() { const m = (COT_DA && !Array.isArray(COT_DA) && COT_DA.lkTen) || {}; Object.entries(m).forEach(([id, t]) => { const l = LK_DS.find(x => x.id === id); if (l && t && !l.ten.some(x => boDau(x) === boDau(t))) l.ten.unshift(t); }); }
 const lkF = f => f.id ? LK_DS.find(l => l.id === f.id) : lkCua(f.k);   // trường liên kết (f.id: trường không có cột riêng trong tab ID DM)
 const laQDThue = n => boDau(n).replace(/[^a-z0-9]+/g, ' ').trim() === 'qd cho thue dat';   // nhiều đợt: "số ngày | diện tích ha; …"
 /* mỗi đợt: "số QĐ | ngày | diện tích ha" (bản cũ 2 phần "số ngày | diện tích" vẫn đọc được) */
@@ -2323,7 +2337,12 @@ const tenLan = i => i ? 'Điều chỉnh lần ' + i : 'Lần đầu';
 const docNL = (kieu, v) => KIEU_NL[kieu].ha ? docDotQD(v) : String(v || '').split(';').map(t => t.trim()).filter(Boolean).map(t => { const a = t.split('|').map(x => x.trim()); const th = Number(String(a[3] || '').replace(/[^\d.,]/g, '').replace(',', '.')); return { so: a[0] || '', ngay: a[1] || '', lan: a[2] || '', thang: th > 0 ? th : '' }; });
 const ghiNL = (kieu, ds) => KIEU_NL[kieu].ha ? ghiDotQD(ds) : ds.filter(x => x.so || x.ngay).map((x, i) => [x.so || '', x.ngay || '', x.lan || tenLan(i)].concat(x.thang > 0 ? [x.thang + ' tháng'] : []).join(' | ')).join('; ');
 const tomTatNL = (kieu, v) => { const ds = docNL(kieu, v); if (!ds.length) return ''; if (KIEU_NL[kieu].ha) return tomTatQD(v);
-  const c = ds[ds.length - 1], th = ds.reduce((a, x) => a + (x.thang || 0), 0); return (ds.length > 1 ? ds.length + ' lần · mới nhất: ' : '') + (c.so || '(chưa có số)') + (c.ngay ? ' ngày ' + c.ngay : '') + (ds.length > 1 && c.lan ? ' (' + c.lan + ')' : '') + (th ? ' · thời gian ' + th + ' tháng' : ''); };
+  const c = moiNhatNL(ds); return [c.so || '(chưa có số)', c.ngay || '(chưa có ngày)', c.lan || ''].filter(Boolean).join(' | '); };   // chỉ lần mới nhất: số | ngày | lần
+/* Sắp các lần theo ngày (cũ → mới, lần chưa có ngày để cuối); lần mới nhất = ngày lớn nhất */
+const giaNgayNL = x => { const m = /(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(x.ngay || ''); return m ? +m[3] * 400 + +m[2] * 31 + +m[1] : null; };
+const sapNL = ds => ds.map((x, i) => [x, i]).sort(([a, i], [b, j]) => { const u = giaNgayNL(a), v = giaNgayNL(b); return u == null && v == null ? i - j : u == null ? 1 : v == null ? -1 : u - v || i - j; }).map(([x]) => x);
+const moiNhatNL = ds => { const s = sapNL(ds).filter(x => giaNgayNL(x) != null); return s.length ? s[s.length - 1] : ds[ds.length - 1]; };
+const dayDuNL = (kieu, v) => docNL(kieu, v).map(x => KIEU_NL[kieu].ha ? [x.so, x.ngay, x.ha != null ? fmtN(x.ha, 4).replace(/,?0+$/, '') + ' ha' : ''].filter(Boolean).join(' | ') : [x.so || '(chưa có số)', x.ngay || '(chưa có ngày)', x.lan || ''].concat(x.thang > 0 ? [x.thang + ' tháng'] : []).filter(Boolean).join(' | ')).join('\n');
 /* Thời gian thực hiện (tháng) nhập ở từng lần QĐ chấp thuận CTĐT / GCN đăng ký đầu tư: lần đầu = thời gian thực hiện ban đầu, các lần điều chỉnh = gia hạn.
    Tiến độ đầu tư = tổng; Kết thúc = Bắt đầu (nhập tay) + tổng. lay(f) trả giá trị trường đang sửa (nếu có). */
 const fNL = kieu => FIELDS.find(f => kieuNL(f.k) === kieu);
@@ -2340,7 +2359,7 @@ const thangQD = (p, lay) => { const a = dsThangNL(p, 'ctdt', lay), b = dsThangNL
 const TEN_NL = { ctdt: 'QĐ chấp thuận CTĐT', gcndt: 'GCN đăng ký đầu tư' };
 /* Chọn tính tiến độ theo QĐ CTĐT hay GCN ĐKĐT (lưu riêng từng dự án), rồi tính lại Thời gian ban đầu/gia hạn → Kết thúc */
 function datTheoTD(p, kieu, lay) { const m = TRUONG_DA[p.ten] = TRUONG_DA[p.ten] || {}; if (m['§td'] === kieu) return; m['§td'] = kieu; dongBoTT('TRUONG_DA'); logH('Chọn tính tiến độ đầu tư theo ' + TEN_NL[kieu], p.ten);
-  const t = thangQD(p, lay); if (t && pmCur === p && pmCheDo) { if (t.bd > 0) pmSua.td15 = String(t.bd); pmSua.td14 = t.gh.join('; '); pmMark(); } }
+  const t = thangQD(p, lay); if (t && pmCur === p && pmCheDo) { pmSua.td15 = String(t.tong); pmSua.td14 = ''; pmMark(); } }
 function hoiTheoTD(p, t, lay) { const nut = k => mkBtn('Dùng ' + TEN_NL[k] + ' (' + (k === 'ctdt' ? t.tA : t.tB) + ' tháng)', () => { datTheoTD(p, k, lay); closeModal(); veFields(); }, k === t.dung ? 'p' : '');
   openModal('Tiến độ đầu tư lệch nhau', '<p>' + esc(p.statName || p.ten) + ': <b>' + TEN_NL.ctdt + '</b> ghi tổng <b>' + t.tA + ' tháng</b>, <b>' + TEN_NL.gcndt + '</b> ghi tổng <b>' + t.tB + ' tháng</b> (cùng ' + t.nA + ' lần).</p><p class="note">Chọn số liệu dùng làm cơ sở tính Tiến độ đầu tư, Kết thúc và hiển thị. Đổi lại sau được ở ô Tiến độ đầu tư khi Chỉnh sửa.</p>', { foot: [nut('ctdt'), nut('gcndt')] }); }
 const tienDoDT = (p, r) => { const t = p && thangQD(p); return t ? t.tong + ' tháng' : soThangTD(r); };
@@ -2348,19 +2367,21 @@ const timNL = (kieu, p) => DOCS.filter(x => x.p === p && KIEU_NL[kieu].tim(x)).s
 /* Hộp nhập nhiều lần/đợt; xong gọi ok(chuỗi giá trị) */
 function moNhieuLan(f, p, v, ok) {
   const kieu = kieuNL(f.k), K = KIEU_NL[kieu], tim = timNL(kieu, p); let ds = docNL(kieu, v);
+  /* Ô Số: gợi ý mọi văn bản có số của dự án (loại đúng lên đầu); chọn số thì tự điền ngày */
+  const ngayD = x => x.d ? pad2(x.d) + '/' + pad2(x.m) + '/' + x.y : x.y ? String(x.y) : '', tatCa = tim.concat(DOCS.filter(x => x.p === p && x.so && !tim.some(t => t.so === x.so)).sort((a, b) => (ngaySo(b) || 0) - (ngaySo(a) || 0)).map(x => ({ so: x.so, ngay: ngayD(x), nd: (x.loai ? x.loai + ': ' : '') + (x.nd || ''), ha: null })));
   if (!ds.length) ds = tim.length ? tim.map((x, i) => Object.assign({ so: x.so, ngay: x.ngay, tu: 1 }, K.ha ? { ha: x.ha } : { lan: tenLan(i) })) : [K.ha ? { so: '', ngay: '', ha: null } : { so: '', ngay: '', lan: tenLan(0) }];
-  const ve = () => { const tong = ds.reduce((a, x) => a + (x.ha || 0), 0);
+  const ve = () => { const tong = ds.reduce((a, x) => a + (x.ha || 0), 0); if (!K.ha) ds.forEach((x, i) => { if (!x.lan || /^(lan dau|dieu chinh lan \d+)$/.test(boDau(x.lan).trim())) x.lan = tenLan(i); });   // đánh lại số lần sau khi thêm/xóa dòng
     $('#mBody').innerHTML = (ds.some(x => x.tu) ? '<p class="warnbox" style="margin:0 0 8px">Đã tự điền từ hồ sơ của dự án (' + tim.length + ' văn bản tìm thấy). Kiểm tra lại rồi bấm Áp dụng.</p>' : '')
-      + '<datalist id="dlNL">' + tim.map(x => '<option value="' + esc(x.so) + '">' + esc(x.ngay + ' · ' + x.nd) + '</option>').join('') + '</datalist>'
+      + '<datalist id="dlNL">' + tatCa.map(x => '<option value="' + esc(x.so) + '">' + esc(x.ngay + ' · ' + x.nd) + '</option>').join('') + '</datalist>'
       + '<div class="nlrow nlhead' + (K.ha ? '' : ' nl5') + '"><span></span><span>Số</span><span>Ngày</span><span>' + (K.ha ? 'Diện tích (ha)' : 'Lần') + '</span>' + (K.ha ? '' : '<span>Thời gian thực hiện (tháng)</span>') + '<span></span></div>'
-      + ds.map((x, i) => '<div class="nlrow' + (K.ha ? '' : ' nl5') + '" data-i="' + i + '"><span class="note">' + (K.ha ? 'Đợt ' + (i + 1) : i + 1) + '</span><input class="nlso"' + (tim.length ? ' list="dlNL"' : '') + ' placeholder="VD: 125/QĐ-UBND" value="' + esc(x.so) + '"><input class="nlngay" placeholder="dd/mm/yyyy" value="' + esc(x.ngay) + '">'
+      + ds.map((x, i) => '<div class="nlrow' + (K.ha ? '' : ' nl5') + '" data-i="' + i + '"><span class="note">' + (K.ha ? 'Đợt ' + (i + 1) : i + 1) + '</span><input class="nlso"' + (tatCa.length ? ' list="dlNL"' : '') + ' placeholder="VD: 125/QĐ-UBND" value="' + esc(x.so) + '"><input class="nlngay" placeholder="dd/mm/yyyy" value="' + esc(x.ngay) + '">'
         + (K.ha ? '<input class="nlha" inputmode="decimal" placeholder="0,00" value="' + (x.ha != null ? esc(fmtN(x.ha, 4).replace(/,?0+$/, '')) : '') + '">' : '<input class="nllan" list="dlLan" value="' + esc(x.lan || tenLan(i)) + '"><input class="nlthang" inputmode="numeric" placeholder="' + (i ? 'Gia hạn, VD 12' : 'VD 84') + '" value="' + esc(x.thang || '') + '">')
         + '<button type="button" class="i" data-nlxoa="' + i + '" title="Bỏ dòng này">' + ic('trash') + '</button></div>').join('')
       + '<datalist id="dlLan">' + [0, 1, 2, 3, 4, 5].map(i => '<option value="' + tenLan(i) + '">').join('') + '<option value="Bổ sung"></datalist>'
       + '<div class="btns" style="justify-content:space-between;margin-top:10px"><div class="btns"><button type="button" data-nlthem>' + ic('plus') + 'Thêm ' + K.ten + '</button><button type="button" data-nltim>Tự tìm trong hồ sơ</button></div>' + (K.ha ? '<span><small class="note">Tổng các đợt</small> <b id="nlTong">' + fmtN(tong, 4).replace(/,?0+$/, '') + ' ha</b></span>' : '') + '</div>'; };
-  const doc = () => $$('#mBody .nlrow[data-i]').forEach(r => { const i = +r.dataset.i, so = r.querySelector('.nlso').value.trim(), ngay = r.querySelector('.nlngay').value.trim(), t = tim.find(y => y.so && y.so === so);
+  const doc = () => $$('#mBody .nlrow[data-i]').forEach(r => { const i = +r.dataset.i, so = r.querySelector('.nlso').value.trim(), ngay = r.querySelector('.nlngay').value.trim(), cs = z => boDau(String(z || '')).replace(/\s+/g, ''), t = so && tatCa.find(y => y.so && cs(y.so) === cs(so));
     ds[i] = Object.assign({ so, ngay: ngay || (t ? t.ngay : '') }, K.ha ? { ha: docHa(r.querySelector('.nlha').value) } : { lan: r.querySelector('.nllan').value.trim(), thang: (n => n > 0 ? n : '')(Number(r.querySelector('.nlthang').value.replace(/[^\d.,]/g, '').replace(',', '.'))) }); if (t && !ngay) r.querySelector('.nlngay').value = t.ngay; });
-  openModal(f.k + ' · ' + (p.statName || p.ten), '', { size: 'w', foot: [mkBtn('Áp dụng', () => { doc(); ok(ghiNL(kieu, ds)); closeModal(); }, 'p')] });
+  openModal(f.k + ' · ' + (p.statName || p.ten), '', { size: 'w', foot: [mkBtn('Áp dụng', () => { doc(); ds = sapNL(ds); if (!K.ha) ds.forEach((x, i) => { if (!x.lan || /^(lan dau|dieu chinh lan \d+)$/.test(boDau(x.lan).trim())) x.lan = tenLan(i); }); ok(ghiNL(kieu, ds)); closeModal(); }, 'p')] });
   ve(); $('#mBody').addEventListener('input', () => { doc(); const t = $('#nlTong'); if (t) t.textContent = fmtN(ds.reduce((a, x) => a + (x.ha || 0), 0), 4).replace(/,?0+$/, '') + ' ha'; });
   $('#mBody').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; doc();
     if (b.dataset.nlthem != null) { ds.push(K.ha ? { so: '', ngay: '', ha: null } : { so: '', ngay: '', lan: tenLan(ds.length) }); ve(); const r = $$('#mBody .nlso'); r[r.length - 1].focus(); return; }
@@ -2381,14 +2402,28 @@ const laHDThue = n => boDau(n).replace(/[^a-z0-9]+/g, ' ').trim() === 'hd thue d
 const coGiaTri = v => { const t = String(v == null ? '' : v).trim(); return !!t && !/^(false|0|không|khong|no)$/i.test(t); };
 /* Tiến độ thực hiện dự án (năm): thường 50 năm; ô trống thì hiểu là 50 (sửa được cho dự án ít/nhiều hơn) */
 const TEN_THOIHAN = 'Tiến độ thực hiện dự án (năm)', THOIHAN_MD = '50';
-const laThoiHan = n => boDau(String(n || '')).replace(/[^a-z0-9]+/g, ' ').trim() === 'tien do thuc hien du an nam';
+const laThoiHan = n => /^(tien do thuc hien du an|thoi gian thue dat)( nam)?$/.test(boDau(String(n || '')).replace(/[^a-z0-9]+/g, ' ').trim()) || FIELDS.some(f => f.k === n && f.vai === 'thoihan');   // nhận theo tên hoặc dấu vai (giữ khi đổi tên)
+/* Sửa lỗi bản cũ: đổi tên trường thời hạn (năm) khi tên đó trùng tên cũ của Tiến độ đầu tư làm tên mới gắn nhầm vào Tiến độ đầu tư (tự tính, không sửa được).
+   Trả tên Tiến độ đầu tư về như cũ và đặt tên mới cho đúng trường thời hạn (cột "Tiến độ thực hiện dự án" trên tab ID DM dự án). Chỉ admin, tự chạy khi mở Cổng. */
+async function suaNhamThoiHan() {
+  const cf = cauHinhDA(), ao = FIELDS.find(f => f.ao && f.id === 'thoiGianTH'), sai = t => t && !/tien do dau tu|thoi gian thuc hien/.test(boDau(t));
+  const f = FIELDS.find(x => !x.ao && /^tien do thuc hien du an$/.test(boDau(x.k).replace(/[^a-z0-9]+/g, ' ').trim()));   // dấu hiệu lỗi: cột thời hạn còn tên cũ trùng tên cũ của Tiến độ đầu tư
+  const moi = sai((cf.ten || {}).thoiGianTH) ? cf.ten.thoiGianTH : ao && sai(ao.k) ? ao.k : ''; if (!moi || !f) return;
+  if (cf.ten) delete cf.ten.thoiGianTH; if (ao) ao.k = 'Tiến độ đầu tư';
+  if (!FIELDS.some(x => x !== f && boDau(x.k) === boDau(moi))) { const cu = f.k; await hookDA('doiTenTruong', cu, moi); f.vai = 'thoihan'; if (f.dv == null) f.dv = 'năm'; f.k = moi;
+    PROJ.forEach(p => { if (p.info && cu in p.info) { p.info[moi] = p.info[cu]; delete p.info[cu]; } });
+    Object.values(TRUONG_DA).forEach(m => { if (cu in m) { m[moi] = m[cu]; delete m[cu]; } }); dongBoTT('TRUONG_DA');
+    const d = k => k === 'i:' + cu ? 'i:' + moi : k; cf.thuTu = (cf.thuTu || []).map(d); cf.an = (cf.an || []).map(d); cf.hien = (cf.hien || []).map(d); }
+  luuCotDA(cf); hookDA('luuTruong'); logH('Sửa lỗi đổi tên trường', 'Tiến độ đầu tư giữ nguyên; "' + moi + '" là trường thời hạn (năm), mặc định 50');
+  try { veFields(); } catch (e) { } toast('Đã sửa lỗi đổi tên: "' + moi + '" là trường thời hạn (năm), nhập được; Tiến độ đầu tư giữ nguyên.');
+}
 const giaTriTruong = (p, f) => { const l = lkF(f); if (l) return l.g(p); const v = (p.info || {})[f.k] || ''; return !String(v).trim() && laThoiHan(f.k) ? THOIHAN_MD : v; };
 const TEN_QD = ['Tên dự án theo QĐ CTĐT', 'Tên dự án theo QĐ', 'Tên theo QĐ CTĐT'];
 const tenQD = p => { if (!p || !p.info) return ''; const k = Object.keys(p.info).find(k => TEN_QD.some(t => boDau(t) === boDau(k))); return k ? String(p.info[k] || '').trim() : ''; };
 const iQD = p => { const t = tenQD(p); return t ? ' <span class="goiy" tabindex="0" data-goiy="' + esc('Tên theo QĐ CTĐT: ' + t) + '" aria-label="' + esc('Tên theo QĐ CTĐT: ' + t) + '">i</span>' : ''; };
 /* Đối chiếu tên giữa bảng tiến độ và danh mục dự án (bỏ tiền tố tỉnh, Unischool = Uni, không dấu) */
 const chuanTenDA = t => boDau(String(t || '').replace(/Unischool/gi, 'Uni').replace(/^.*? - /, '')).replace(/[^a-z0-9]+/g, ' ').trim();
-const khopTD = (r, p) => { const k = chuanTenDA(r[0]); return k && (k === chuanTenDA(p.statName) || k === chuanTenDA(p.ten) || k === chuanTenDA(p.ten.replace(/^.*? - /, '') + ' ' + (p.tinh || '')) && chuanTenDA(r[1] === 'Hồ Chí Minh' ? 'HCM' : r[1]) === chuanTenDA(p.tinh)); };   // thêm: tên ngắn + tỉnh (vd "Đà Nẵng - FPL" ↔ "FPL Đà Nẵng")
+const khopTD = (r, p) => { const k = chuanTenDA(r[0]); return k && (k === chuanTenDA(p.statName) || (p.tenTK && k === chuanTenDA(p.tenTK)) || k === chuanTenDA(p.ten) || k === chuanTenDA(p.ten.replace(/^.*? - /, '') + ' ' + (p.tinh || '')) && chuanTenDA(r[1] === 'Hồ Chí Minh' ? 'HCM' : r[1]) === chuanTenDA(p.tinh)); };   // thêm: tên ngắn + tỉnh (vd "Đà Nẵng - FPL" ↔ "FPL Đà Nẵng")
 /* Sau khi đổi tên dự án: tên thống kê, dòng tiến độ, thông tin riêng theo dự án đi theo tên mới */
 function sauDoiTenDA(p, tenCu) {
   if (tenCu === p.ten) return; const ngan = t => String(t || '').replace(/^.*? - /, '');
@@ -2438,6 +2473,32 @@ function chuanTenTD() { let doiTD = false, doiTK = false;
   return { doiTD, doiTK }; }
 /* Bảng tiến độ chỉ hiện dự án đã chấp thuận NĐT: dòng khớp một dự án đang "chưa chấp thuận" thì ẩn (vẫn giữ dữ liệu, chấp thuận lại là hiện) */
 function tdAn(r) { const p = PROJ.find(q => !q.chiTK && khopTD(r, q)); return !!p && !p.duyet; }
+/* Admin, tự chạy khi mở Cổng: bảng tiến độ khớp danh mục —
+   dòng tiến độ còn tên cũ (tên trong số liệu Thống kê) đổi sang tên danh mục; dự án đã chấp thuận NĐT chưa có dòng tiến độ thì thêm dòng (hiện "Chưa có thời gian thực hiện") */
+/* Thứ tự cột tab ID DM dự án đi theo thứ tự trường trên app */
+const sapCotSheet = () => hookDA('sapCotDM', FIELDS.filter(f => !f.ao).map(f => f.k)).catch(e => toast('Chưa sắp được cột trên trang tính: ' + String(e.message || e).replace(/^[A-Z_]+:\s*/, '')));
+/* Admin, tự chạy khi mở Cổng: 2 cột trên tab ID DM cùng là một trường liên thông (VD "Chấp thuận NĐT" và "Thời gian Chấp thuận NĐT") → gộp làm 1:
+   giữ cột đứng trước, ô trống thì lấy giá trị từ cột kia, rồi xóa cột kia. */
+async function gopCotTrung() {
+  for (const id of ['qh', 'bg', 'ngayCT', 'pl']) {
+    const ds = FIELDS.filter(f => !f.ao && (lkCua(f.k) || {}).id === id); if (ds.length < 2) continue; const giu = ds[0];
+    for (const d of ds.slice(1)) {
+      const doi = PROJ.filter(p => p.info && String(p.info[d.k] || '').trim() && !String(p.info[giu.k] || '').trim()); doi.forEach(p => { p.info[giu.k] = p.info[d.k]; });
+      for (const p of doi) await hookDA('luuThongTin', p).catch(() => { });
+      await hookDA('xoaTruong', d.k); PROJ.forEach(p => { if (p.info) delete p.info[d.k]; }); FIELDS.splice(FIELDS.indexOf(d), 1);
+      logH('Gộp cột trùng', '"' + d.k + '" gộp vào "' + giu.k + '" (' + doi.length + ' ô được điền), xóa cột "' + d.k + '"'); }
+    hookDA('luuTruong'); }
+}
+function dongBoTDDanhMuc() {
+  const doi = [], them = [], tinhR = r => r[1] === 'Hồ Chí Minh' ? 'HCM' : r[1];
+  PROJ.filter(p => p.duyet && !p.chiTK && !p.ngoaiDM).forEach(p => {
+    if (p.tenTK && chuanTenDA(p.tenTK) !== chuanTenDA(p.statName)) { TD.filter(r => chuanTenDA(r[0]) === chuanTenDA(p.tenTK) && (!r[1] || lechChu(tinhR(r), p.tinh) <= 2)).forEach(r => { doi.push(r[0] + ' → ' + p.statName); r[0] = p.statName; }); p.tenTK = ''; }
+    if (!TD.some(r => khopTD(r, p))) { chenTD(p); them.push(p.statName || p.ten); } });
+  if (!doi.length && !them.length) return;
+  dongBoTT('TD'); dongBoTT('TK');
+  logH('Cập nhật bảng tiến độ', [doi.length ? 'Đổi tên theo danh mục: ' + doi.join('; ') : '', them.length ? 'Thêm dòng cho dự án đã chấp thuận NĐT: ' + them.join(', ') : ''].filter(Boolean).join(' · '));
+  if (!$('#v-tiendo').hidden) veTienDo();
+}
 function chenTD(p) {
   const ten = p.statName || p.ten.replace(/^.*? - /, ''), g = chuanTenDA(ten).split(' ')[0], ts = t => { const i = TINH_LIST.indexOf(t === 'Hồ Chí Minh' ? 'HCM' : t); return i < 0 ? 99 : i; };
   { const co = TD.find(r => chuanTenDA(r[0]) === chuanTenDA(ten) && (!r[1] || lechChu(r[1] === 'Hồ Chí Minh' ? 'HCM' : r[1], p.tinh) <= 2)); if (co) return { r: co, at: TD.indexOf(co) }; }   // đã có dòng cùng tên (tỉnh giống hoặc gõ sai nhẹ): dùng lại, không thêm dòng trùng
@@ -2503,11 +2564,12 @@ const soVN = v => { let t = String(v == null ? '' : v).trim().replace(/\s/g, '')
 /* Tổng mức đầu tư: nhập theo đồng, hiển thị/thống kê theo tỷ, ký hiệu B (billion = tỷ). VD 125.000.000.000 → 125 B; số đã nhỏ hơn 1 triệu coi là đang ghi theo tỷ */
 const laTien = n => /tong muc dau tu|von dau tu/.test(boDau(String(n || '')));
 const soTien = v => { const n = soVN(v); return n == null ? null : Math.abs(n) >= 1e6 ? n / 1e9 : n; };
-const hienTien = v => { const t = soTien(v); return t == null ? String(v == null ? '' : v) : t.toLocaleString('vi-VN', { maximumFractionDigits: 2 }) + ' B'; };   // làm tròn 2 chữ số sau dấu phẩy (VD 663,99 B)
+const fmtB = t => t.toLocaleString('vi-VN', { maximumFractionDigits: 2 }) + ' B';
+const hienTien = v => { const t = soTien(v); return t == null ? String(v == null ? '' : v) : fmtB(t); };   // làm tròn 2 chữ số sau dấu phẩy (VD 663,99 B)
 const CHISO_GOC = new Set(Object.keys(CHISO).concat(['gcn', 'hdt', 'qdt', 'dot']));
 function dongBoChiSo() {
   Object.keys(CHISO).filter(k => k.startsWith('f:')).forEach(k => delete CHISO[k]);
-  const bo = /^(dien tich (da|du an)|dien tich da ban giao|da ban giao|gcn qsdd|hd thue dat|qd (cho )?thue dat|ten du an|khu vuc|vung|tinh|loai hinh phap ly|loai ctdt|chu truong dau tu|chap thuan ndt|loai diem truong|link map|dia chi|ghi chu|canh bao|thoi gian chap thuan|phap ly dat dai|so thang con lai|tien do thuc hien du an nam)/, laLoaiDT = kb => LOAI_DT.some(t => boDau(t) === kb);
+  const bo = /^(dien tich (da|du an)|dien tich da ban giao|da ban giao|gcn qsdd|hd thue dat|qd (cho )?thue dat|ten du an|khu vuc|vung|tinh|loai hinh phap ly|loai ctdt|chu truong dau tu|chap thuan ndt|loai diem truong|link map|dia chi|ghi chu|canh bao|thoi gian chap thuan|phap ly dat dai|so thang con lai|tien do thuc hien du an)/, laLoaiDT = kb => LOAI_DT.some(t => boDau(t) === kb);
   const mau = ['var(--c1)', 'var(--c2)', 'var(--c3)', 'var(--accent)', 'var(--bar2)']; let i = 0;
   (FIELDS || []).forEach(f => { const kb = boDau(f.k).replace(/[^a-z0-9]+/g, ' ').trim(); if (!f.k || bo.test(kb) || laLoaiDT(kb) || f.ds === false && !f.show) return;
     const g = p => giaTriTruong(p, f), co = PROJ.filter(p => String(g(p) == null ? '' : g(p)).trim()), so = co.filter(p => soVN(g(p)) != null), nl = kieuNL(f.k), dv = dvCua(f), m = mau[i++ % mau.length];
@@ -2561,10 +2623,12 @@ $('#charts').addEventListener('click', e => { const ed = e.target.closest('[data
   if (ed) moTaoBieuDo(SAVED.find(s => s.id === ed.dataset.sedit));
   if (dl) { const sv = SAVED.find(s => s.id === dl.dataset.sdel); openModal('Xóa biểu đồ?', '<p>Biểu đồ <b>' + esc(tieuDeCfg(sv.cfg)) + '</b> ' + (bdRieng() ? 'chỉ bị bỏ khỏi tab Thống kê trên tài khoản của bạn' : 'sẽ bị bỏ khỏi tab Thống kê của mọi người') + '.</p>', { foot: [mkBtn('Xóa biểu đồ', () => { SAVED = SAVED.filter(s => s !== sv); luuDS(); $('#ch' + sv.id).remove(); capNhatBoCuc(); logH('Xóa biểu đồ thống kê', tieuDeCfg(sv.cfg)); closeModal(); }, 'd')] }); } }); $('#c6x').onclick = () => { $('#ch6').hidden = true; CUSTOM = null; danhSoBieuDo(); };
 
-function datThuTK(thu) { $('#tkHead').classList.toggle('thu', thu); $(thu ? '#slotMini' : '#slotFull').appendChild($('#tkBtns')); $('#tkMini').hidden = !thu; $('#tkFold').innerHTML = '<svg class="ic"><use href="#i-' + (thu ? 'down' : 'up') + '"/></svg><span>' + (thu ? 'Mở bộ lọc' : 'Thu gọn') + '</span>'; $('#tkFold').title = thu ? 'Mở bộ lọc và chỉ số' : 'Thu gọn bộ lọc và chỉ số'; $('#tkFold').setAttribute('aria-label', $('#tkFold').title); try { localStorage.setItem('cho_thutk', thu ? '1' : ''); } catch (e) { } }
+function datThuTK(thu, luu = true) { $('#tkHead').classList.toggle('thu', thu); $(thu ? '#slotMini' : '#slotFull').appendChild($('#tkBtns')); $('#tkMini').hidden = !thu; $('#tkFold').innerHTML = '<svg class="ic"><use href="#i-' + (thu ? 'down' : 'up') + '"/></svg><span>' + (thu ? 'Mở bộ lọc' : 'Thu gọn') + '</span>'; $('#tkFold').title = thu ? 'Mở bộ lọc và chỉ số' : 'Thu gọn bộ lọc và chỉ số'; $('#tkFold').setAttribute('aria-label', $('#tkFold').title); if (luu) try { localStorage.setItem('cho_thutk', thu ? '1' : ''); } catch (e) { } }
 $('#res').addEventListener('scroll', () => { const r = $('#res'), m = $('#more'); if (!m.hidden && r.scrollTop + r.clientHeight > r.scrollHeight - 200) m.click(); });
 $('#tkFold').onclick = () => datThuTK(!$('#tkHead').classList.contains('thu'));
-{ let v = null; try { v = localStorage.getItem('cho_thutk'); } catch (e) { } if (v === '1' || (v === null && matchMedia('(max-width:900px)').matches)) datThuTK(true); }
+/* Máy tính, màn hình lớn (≥1100px): luôn hiện đủ bộ lọc và chỉ số, không có nút Thu gọn; màn nhỏ giữ thu gọn như cũ */
+{ const lon = matchMedia('(min-width:1100px)'), apTK = () => { let v = null; try { v = localStorage.getItem('cho_thutk'); } catch (e) { } datThuTK(!lon.matches && (v === '1' || (v === null && matchMedia('(max-width:900px)').matches)), false); };
+  apTK(); lon.addEventListener('change', apTK); }
 let RW = {}; const ro = new ResizeObserver(en => { let doi = false; en.forEach(e => { const k = e.target.id, w = Math.round(e.contentRect.width); if (RW[k] && Math.abs(RW[k] - w) > 4) doi = true; RW[k] = w; }); if (!doi) return; clearTimeout(window.__rs); window.__rs = setTimeout(() => { if (!$('#v-thongke').hidden) veThongKe(); if (!$('#v-lichsu').hidden) veLichSu(); }, 150); });
 setTimeout(() => { $$('#charts>.panel').forEach(p => ro.observe(p)); ro.observe($('#lsChart')); new MutationObserver(() => $$('#charts>.panel').forEach(p => ro.observe(p))).observe($('#charts'), { childList: true }); }, 0);
 const doNav = () => { const n = $('nav.tabs'); if (n && matchMedia('(max-width:900px)').matches) document.documentElement.style.setProperty('--navh', n.offsetHeight + 'px'); }; addEventListener('resize', doNav); setTimeout(doNav, 0);
@@ -2828,19 +2892,37 @@ $('#chkBtn').onclick = () => {
     const bqN = x => 'DM|' + boDau(x.ten), ngoaiBQ = PROJ.filter(p => p.ngoaiDM && !p.chiTK && BOQUA.includes(bqN(p))), ngoai = az(PROJ.filter(p => p.ngoaiDM && !p.chiTK && !BOQUA.includes(bqN(p))).map(p => p.ten)).map(projByName), dm = PROJ.filter(p => !p.ngoaiDM && !p.chiTK);
     const giong = x => { const k = chuanTenDA(x.ten); return dm.find(q => chuanTenDA(q.ten) === k && (lechChu(q.tinh, x.tinh) <= 2 || lechChu(q.ten.split(' - ')[0], x.ten.split(' - ')[0]) <= 2)) || dm.find(q => lechChu(q.ten, x.ten) <= 2); };
     const soVB = x => DOCS.filter(d => d.p === x).length;
+    /* Gợi ý dự án đích để gộp: cùng tỉnh, tên ngắn chứa nhau hoặc trùng phần lớn chữ (VD "Hưng Nguyên" ↔ "Uni Hưng Nguyên", "FSC Eco Vinh" ↔ "FSC Vinh") */
+    const tinhTab = x => x.ten.includes(' - ') ? x.ten.split(' - ')[0] : x.ten, nganTab = x => x.ten.includes(' - ') ? x.ten.replace(/^.*? - /, '') : '';
+    const chu = t => chuanTenDA(t).split(' ').filter(w => w && !/^(uni|fu|fpl|fsc|fpt|du|an|truong|co|so|cs)$/.test(w));
+    const goiYGop = x => { const g = giong(x); if (g) return g; const n = chu(nganTab(x)); if (!n.length) return null; const cung = dm.filter(q => boDau(q.ten.split(' - ')[0]) === boDau(tinhTab(x)));
+      let tot = null, d0 = 0; cung.forEach(q => { const m = chu(q.ten.replace(/^.*? - /, '')); if (!m.length) return; const chung = n.filter(w => m.includes(w)).length, d = chung / Math.min(n.length, m.length); if (d > d0) { d0 = d; tot = q; } }); return d0 >= .99 ? tot : null; };
+    const chonGop = x => { const g = goiYGop(x), cung = az(dm.filter(q => boDau(q.ten.split(' - ')[0]) === boDau(tinhTab(x))).map(q => q.ten)), khac = az(dm.map(q => q.ten).filter(t => !cung.includes(t)));
+      return '<select data-gopvao aria-label="Gộp vào dự án"><option value="">— Chọn dự án trong danh mục —</option>' + (cung.length ? '<optgroup label="Cùng tỉnh ' + esc(tinhTab(x)) + '">' + cung.map(t => '<option' + (g && g.ten === t ? ' selected' : '') + '>' + esc(t) + '</option>').join('') + '</optgroup>' : '') + '<optgroup label="Dự án khác">' + khac.map(t => '<option' + (g && g.ten === t ? ' selected' : '') + '>' + esc(t) + '</option>').join('') + '</optgroup></select>'; };
     $('#mBody').insertAdjacentHTML('beforeend', '<h3 style="margin:16px 0 4px">Dự án không có trong tab "ID DM dự án" (' + ngoai.length + ')</h3>' + (ngoaiBQ.length ? '<p class="note" style="margin:0 0 6px">Đang bỏ qua ' + ngoaiBQ.length + ' dự án: ' + ngoaiBQ.map(x => esc(x.ten) + ' <button type="button" class="s" data-hiendm="' + x.id + '">Đếm lại</button>').join(' · ') + '</p>' : '') + (!ngoai.length ? '<p class="note">Không có. Mọi dự án đều có trong danh mục.</p>'
-      : '<p class="note" style="margin:0 0 6px">Các dự án này có tab trên trang tính hồ sơ nhưng không có dòng trong tab "ID DM dự án" (thường do tên tab gõ khác tên trong danh mục), nên app hiện thêm thành dự án riêng.</p><div class="tb"><table class="nosx bangthe"><thead><tr><th>Tên tab hồ sơ</th><th class="n">Văn bản</th><th>Giống dự án trong danh mục</th><th></th></tr></thead><tbody>'
-      + ngoai.map(x => { const g = giong(x), n = soVB(x); return '<tr data-ngoai="' + x.id + '"><td class="the1">' + esc(x.ten) + '</td><td class="n" data-n="Văn bản">' + n + '</td><td data-n="Giống">' + (g ? esc(g.ten) : '<span class="note">—</span>') + '</td><td>'
-        + '<div class="tdnut">' + (isAdmin() ? (n ? '' : nutB('d', 'data-xoangoai="1"', 'trash', 'Xóa tab trống')) + nutB('', 'data-themdm="1"', 'plus', 'Thêm vào danh mục') + nutB('', 'data-bqdm="1"', 'eyeoff', 'Bỏ qua') : '') + '</div>' + '</td></tr>'; }).join('') + '</tbody></table></div>'
-        + '<p class="note" style="margin-top:6px">Nếu là cùng một dự án với dự án trong danh mục: sửa tên tab hồ sơ (hoặc tên trong tab "ID DM dự án") cho giống hệt nhau, app tự gộp lại.</p>'));
+      : '<p class="note" style="margin:0 0 6px">Các dự án này có tab trên trang tính hồ sơ nhưng không có dòng trong tab "ID DM dự án" (thường do tên tab gõ khác tên trong danh mục), nên app hiện thêm thành dự án riêng.</p><div class="tb"><table class="nosx bangthe"><thead><tr><th>Tên tab hồ sơ</th><th class="n">Văn bản</th><th>Là dự án nào trong danh mục?</th><th></th></tr></thead><tbody>'
+      + ngoai.map(x => { const g = giong(x), n = soVB(x); return '<tr data-ngoai="' + x.id + '"><td class="the1">' + esc(x.ten) + '</td><td class="n" data-n="Văn bản">' + n + '</td><td data-n="Là dự án">' + (isAdmin() ? chonGop(x) : g ? esc(g.ten) : '<span class="note">—</span>') + '</td><td>'
+        + '<div class="tdnut">' + (isAdmin() ? nutB('p', 'data-gop="1"', 'gop', 'Gộp') + (n ? '' : nutB('d', 'data-xoangoai="1"', 'trash', 'Xóa tab trống')) + nutB('', 'data-themdm="1"', 'plus', 'Là dự án mới') + nutB('', 'data-bqdm="1"', 'eyeoff', 'Bỏ qua') : '') + '</div>' + '</td></tr>'; }).join('') + '</tbody></table></div>'
+        + '<p class="note" style="margin-top:6px">Cùng một dự án đã có trong danh mục: chọn dự án ở cột "Là dự án nào" rồi bấm <b>Gộp</b> (văn bản chuyển sang dự án đó, tab cũ được xóa, tệp giữ nguyên). Dự án thật sự mới: bấm <b>Là dự án mới</b>. <b>Bỏ qua</b> chỉ ẩn khỏi danh sách kiểm tra, không đổi dữ liệu.</p>'));
     $$('#mBody [data-hiendm]').forEach(b => b.onclick = () => { const x = PROJ.find(p => p.id === b.dataset.hiendm); if (!x) return; BOQUA = BOQUA.filter(z => z !== bqN(x)); dongBoTT('BOQUA'); $('#chkBtn').click(); });
     $$('#mBody [data-ngoai] button').forEach(b => b.onclick = async () => { const x = PROJ.find(p => p.id === b.closest('tr').dataset.ngoai); if (!x) return;
-      if (b.dataset.bqdm) { BOQUA = BOQUA.concat(bqN(x)); dongBoTT('BOQUA'); logH('Bỏ qua kiểm tra dữ liệu thiếu', 'Dự án không có trong danh mục: ' + x.ten); $('#chkBtn').click(); return; } b.disabled = true;
+      if (b.dataset.bqdm) { BOQUA = BOQUA.concat(bqN(x)); dongBoTT('BOQUA'); logH('Bỏ qua kiểm tra dữ liệu thiếu', 'Dự án không có trong danh mục: ' + x.ten); $('#chkBtn').click(); return; }
+      if (b.dataset.gop) { const dich = b.closest('tr').querySelector('[data-gopvao]').value, q = dich && dm.find(z => z.ten === dich && z !== x); if (!q) { toast('Chọn dự án trong danh mục ở cột "Là dự án nào" trước.'); return; } const n = soVB(x);
+        openModal('Gộp tab hồ sơ vào dự án', '<p>Chuyển <b>' + n + ' văn bản</b> của tab <b>' + esc(x.ten) + '</b> sang dự án <b>' + esc(q.ten) + '</b>, rồi xóa tab <b>' + esc(x.ten) + '</b>.</p><p class="note">Tệp đính kèm giữ nguyên trên Drive, link không đổi. Việc gộp được ghi vào Lịch sử.</p>',
+          { foot: [mkBtn('Gộp', async () => { closeModal(); toast('Đang gộp ' + x.ten + ' vào ' + q.ten + '…');
+            try { await hookDA('gopTab', x, q.ten); if (!LIVE) { DOCS.forEach(d => { if (d.p === x) d.p = q; }); const i = PROJ.indexOf(x); if (i >= 0) PROJ.splice(i, 1); }
+              if (!LIVE) logH('Gộp tab hồ sơ vào dự án', x.ten + ' → ' + q.ten + ' (' + n + ' văn bản)'); toast('Đã gộp ' + x.ten + ' vào ' + q.ten + '.'); napDanhSach(); pmLocDanhSach(); }
+            catch (er) { toast('Chưa gộp được: ' + String(er.message || er).replace(/^[A-Z_]+:\s*/, '')); }
+            setTimeout(() => $('#chkBtn').click(), 300); }, 'p'), mkBtn('Hủy', () => $('#chkBtn').click())] }); return; }
+      b.disabled = true;
       try {
         if (b.dataset.xoangoai) { await hookDA('xoaDA', x); const i = PROJ.indexOf(x); if (i >= 0) PROJ.splice(i, 1); logH('Xóa dự án', x.ten + ' (tab trống, không có trong danh mục)'); toast('Đã xóa tab trống ' + x.ten + '.'); }
         else { await hookDA('themDA', { ten: x.ten, tinh: x.tinh, vung: x.vung, pl: '', loai: [], duyet: !!x.duyet }); x.ngoaiDM = false; logH('Thêm dự án', x.ten + ' (vào danh mục, giữ tab hồ sơ)'); toast('Đã thêm ' + x.ten + ' vào danh mục.'); }
         napDanhSach(); pmLocDanhSach(); $('#chkBtn').click();
       } catch (er) { b.disabled = false; toast('Chưa làm được: ' + String(er.message || er).replace(/^[A-Z_]+:\s*/, '')); } }); }
+  { /* Dự án M&A: ngày chấp thuận NĐT phải theo văn bản chấp thuận chuyển nhượng; bản trước có thể đã lấy nhầm ngày QĐ của nhà đầu tư ban đầu */
+    const L3 = PROJ.filter(p => p.duyet && !p.chiTK && laMA(p) && !vbMoc(p, laCNMA) && !p.ctTay);
+    $('#mBody').insertAdjacentHTML('beforeend', '<h3 style="margin:16px 0 4px">Dự án M&A chưa có văn bản chấp thuận chuyển nhượng (' + L3.length + ')</h3>' + (!L3.length ? '<p class="note">Không có.</p>' : '<p class="note" style="margin:0 0 6px">Với dự án M&A, ngày chấp thuận NĐT tính theo văn bản chấp thuận chuyển nhượng. Các dự án dưới đây chưa có văn bản đó trong hồ sơ: tải văn bản lên (trích yếu có "chấp thuận … chuyển nhượng"), hoặc kiểm tra lại ngày ở Quản lý dự án → Chỉnh sửa.</p><ul style="margin:0;padding-left:18px">' + L3.map(p => { const q = vbMoc(p, laQDNDT); return '<li>' + esc(p.ten) + ': ngày đang ghi <b>' + esc(p.ngayCT || (p.nam ? String(p.nam) : 'trống')) + '</b>' + (q && ngayVB(q) === p.ngayCT ? ' <span class="tag w">trùng ngày QĐ của nhà đầu tư ban đầu</span>' : '') + '</li>'; }).join('') + '</ul>')); }
   { /* Đã bàn giao lệch tổng diện tích các đợt QĐ giao/cho thuê đất */
     const L2 = PROJ.filter(p => lechQD(p) != null);
     $('#mBody').insertAdjacentHTML('beforeend', '<h3 style="margin:16px 0 4px">Đã bàn giao lệch tổng QĐ giao/cho thuê đất</h3>' + (!L2.length ? '<p class="note">Không có dự án nào lệch.</p>' : '<ul style="margin:0;padding-left:18px">' + L2.map(p => '<li>' + esc(p.ten) + ': tổng các đợt <b>' + fmtN(lechQD(p), 4).replace(/,?0+$/, '') + ' ha</b>, Đã bàn giao <b>' + (p.bg != null ? fmtN(p.bg / 1e4, 4).replace(/,?0+$/, '') + ' ha' : 'trống') + '</b></li>').join('') + '</ul><p class="note">Sửa ở Quản lý dự án → Danh sách dự án (ô lệch được tô vàng).</p>')); }
@@ -2998,7 +3080,7 @@ function pmLocDanhSach() {
 let pmCheDo = '', MO_COT_DA = false;   // '' xem · 'sua' chỉnh sửa · 'moi' thêm dự án
 const CORE_PM = ['Tên dự án', 'Khu vực', 'Tỉnh thành', 'Loại hình pháp lý', 'Loại CTĐT', 'Chấp thuận NĐT', 'Loại điểm trường'];
 const laCorePM = f => { const l = lkF(f); return boDau(f.k) === boDau('Tên dự án') || boDau(f.k) === boDau(TRUONG_CTDT) || !!(l && ['ten', 'tinh', 'vung', 'pl', 'duyet', 'plDat'].concat(LOAI_DT).includes(l.id)); };
-const DV_MAC = [[/thuc hien du an \(nam\)|\(nam\)$/, 'năm'], [/\(ha\)|dien tich|ban giao/, 'ha'], [/\(m2\)|\(m²\)/, 'm²'], [/tien do dau tu|thoi gian thuc hien|gia han|so thang/, 'tháng'], [/tong muc dau tu/, 'đồng'], [/quy mo/, 'HS, SV'], [/^ct |cong trinh/, 'công trình']];
+const DV_MAC = [[/thuc hien du an|\(nam\)$/, 'năm'], [/\(ha\)|dien tich|ban giao/, 'ha'], [/\(m2\)|\(m²\)/, 'm²'], [/tien do dau tu|thoi gian thuc hien|gia han|so thang/, 'tháng'], [/tong muc dau tu/, 'đồng'], [/quy mo/, 'HS, SV'], [/^ct |cong trinh/, 'công trình']];
 /* Diện tích DA, Đã bàn giao: dữ liệu luôn lưu và hiện theo ha, đơn vị cố định (không theo đơn vị đã đặt tay) */
 const dvCoDinh = f => ['qh', 'bg'].includes((lkF(f) || {}).id) ? 'ha' : '';
 const dvCua = f => dvCoDinh(f) || (f.dv != null ? f.dv : ((DV_MAC.find(([r]) => r.test(boDau(f.k))) || [])[1] || ''));
@@ -3034,7 +3116,7 @@ function veCore() {   // thông tin chính gọn như biểu mẫu cũ (Khu vự
 const hienDS = () => { dongBoTruong(); const ds = FIELDS.map((f, i) => [f, i]).filter(([f]) => !laCorePM(f) && !BO_DS_DA.includes((lkF(f) || {}).id));
   /* "Chấp thuận NĐT" và "Thời gian Chấp thuận NĐT" cùng là ngày chấp thuận: chỉ giữ 1 dòng (ưu tiên tên "Chấp thuận NĐT") */
   const ct = ds.filter(([f]) => { const l = lkF(f); return l && l.id === 'ngayCT'; }); if (ct.length < 2) return ds;
-  const giu = ct.find(([f]) => boDau(f.k) === boDau('Chấp thuận NĐT')) || ct[0]; return ds.filter(x => !ct.includes(x) || x === giu); };
+  const giu = ct[0]; return ds.filter(x => !ct.includes(x) || x === giu); };   // giữ dòng đứng trước (vị trí người dùng đã kéo); tên hiển thị theo tên đã đổi
 /* Số lần điều chỉnh CTĐT tự đếm theo trường QĐ chấp thuận CTĐT (các lần ghi "Điều chỉnh…") */
 const fCTDT = () => FIELDS.find(f => kieuNL(f.k) === 'ctdt');
 const soLanDC = v => { const ds = docNL('ctdt', v); return ds.length ? ds.filter(x => /dieu chinh/.test(boDau(x.lan))).length : null; };
@@ -3057,17 +3139,27 @@ function moChonThang(inp) {
   setTimeout(() => document.addEventListener('mousedown', function f(e) { if (!cal.isConnected) { document.removeEventListener('mousedown', f); return; } if (!cal.contains(e.target) && e.target !== inp && !(e.target.closest && e.target.closest('[data-thang]'))) { cal.remove(); document.removeEventListener('mousedown', f); } }), 0);
 }
 /* Ngày chấp thuận NĐT tự lấy theo ngày quyết định chấp thuận nhà đầu tư sớm nhất trong hồ sơ của dự án */
-const ngayQDNDT = p => { const x = DOCS.filter(d => d.p === p && /quyet dinh/.test(boDau(d.loai)) && /chap thuan (nha )?dau tu|chap thuan ndt/.test(boDau(d.nd)) && d.y).sort((a, b) => (ngaySo(a) || a.y * 1e4) - (ngaySo(b) || b.y * 1e4))[0];
-  return x ? (x.d && x.m ? pad2(x.d) + '/' + pad2(x.m) + '/' + x.y : String(x.y)) : ''; };
+/* Văn bản làm mốc "chấp thuận NĐT": dự án thường = QĐ chấp thuận nhà đầu tư; dự án M&A = văn bản của cơ quan nhà nước chấp thuận chuyển nhượng
+   (QĐ chấp thuận NĐT trong hồ sơ M&A là của nhà đầu tư ban đầu nên không dùng). Bỏ qua thu hồi, hủy, đề nghị, tờ trình, dự thảo. */
+const laMA = p => /^m ?& ?a$/.test(boDau(String(p && p.pl || '')).trim());
+const laQDNDT = d => /quyet dinh/.test(boDau(d.loai)) && /chap thuan nha dau tu|chap thuan ndt\b/.test(boDau(d.nd));
+const laCNMA = d => /chap thuan/.test(boDau(d.nd)) && /chuyen nhuong/.test(boDau(d.nd));
+const vbMoc = (p, ok) => DOCS.filter(d => d.p === p && d.y && ok(d) && !/thu hoi|huy bo|bai bo|de nghi|to trinh|du thao/.test(boDau(d.nd))).sort((a, b) => (ngaySo(a) || a.y * 1e4) - (ngaySo(b) || b.y * 1e4))[0];
+const ngayVB = x => x ? (x.d && x.m ? pad2(x.d) + '/' + pad2(x.m) + '/' + x.y : String(x.y)) : '';
+const ngayQDNDT = p => ngayVB(vbMoc(p, laMA(p) ? laCNMA : laQDNDT));
 /* Ngày chấp thuận NĐT luôn theo QĐ chấp thuận NĐT sớm nhất trong hồ sơ (mọi nơi: Thống kê, Danh sách, Tiến độ); có QĐ thì tính là đã chấp thuận NĐT.
    Đã sửa tay khác ngày QĐ (p.ctTay) thì giữ giá trị sửa tay. Dự án vừa đổi ghi vào window.__qdDoi để bản chạy thật lưu lên máy chủ. */
 function apNgayQD() {
   const doi = [];
-  PROJ.forEach(p => { if (p.chiTK || p.ctTay) return; const a = ngayQDNDT(p); if (!a) return; const y = +a.slice(-4);
+  const kct = p => (typeof BOQUA !== 'undefined' ? BOQUA : []).includes('KCT|' + boDau(p.ten));   // admin đã đặt "chưa chấp thuận NĐT" bằng tay: không tự tính lại
+  let themTD = false;
+  PROJ.forEach(p => { if (p.chiTK || p.ngoaiDM || p.ctTay) return; const a = ngayQDNDT(p); if (!a) return; const y = +a.slice(-4);   // chỉ dự án có trong danh mục
+    if (!p.duyet && kct(p)) return;
     if (p.duyet && p.ngayCT === a && p.nam === y) return;
-    if (!p.duyet) { p.duyet = true; p.loai = p.loai || []; if (!p.statName) p.statName = p.ten.replace(/^.*? - /, ''); }
+    if (!p.duyet) { p.duyet = true; p.loai = p.loai || []; if (!p.statName) p.statName = p.ten.replace(/^.*? - /, ''); if (window.__apQDOn && isAdmin() && !TD.some(r => khopTD(r, p))) { chenTD(p); themTD = true; } }
     p.ngayCT = a; p.nam = y; p.info = p.info || {}; p.info[khoaInfo(p, TEN_CT)] = a; doi.push(p); });
   if (doi.length) window.__qdDoi = (window.__qdDoi || []).concat(doi.filter(p => !(window.__qdDoi || []).includes(p)));
+  if (themTD) { dongBoTT('TD'); logH('Cập nhật bảng tiến độ', 'Thêm dòng cho dự án vừa có QĐ chấp thuận NĐT'); }
   return doi;
 }
 const danhDauCT = p => { const a = ngayQDNDT(p); p.ctTay = !!(a && String(p.ngayCT || '').trim() && String(p.ngayCT).trim() !== a); };
@@ -3079,10 +3171,11 @@ function veFields() {
     if (lk && lk.id === 'td8' && p && !(khoaS in pmSua) && String(v).trim() === '') { const fc = fCTDT(), a = fc ? soLanDC('i:' + fc.k in pmSua ? pmSua['i:' + fc.k] : giaTriTruong(p, fc)) : null; if (a != null) { tuQD = String(a); v = tuQD; if (sua) { pmSua[khoaS] = tuQD; pmDirty = true; } } }
     if (lk && lk.id === 'ngayCT' && p && !(khoaS in pmSua)) { const a = ngayQDNDT(p); if (a && (!v || (/^\d{4}$/.test(String(v).trim()) && a.endsWith(String(v).trim()) && a !== String(v).trim()))) { tuQD = a; v = a; if (sua) { pmSua[khoaS] = a; pmDirty = true; } } }
     if (!sua && p && laTien(f.k) && String(v).trim()) v = hienTien(v);
+    if (!sua && p && lk && (lk.id === 'qh' || lk.id === 'bg') && String(v).trim()) v = haHien(p[lk.id]);
     const laT = sua && laTien(f.k); if (laT && /^[\d.\s]+$/.test(String(v).trim()) && String(v).trim()) v = chamNghin(v);
     const o = cauTruc ? '<input class="val" type="text" data-k="val" disabled placeholder="' + (lk ? (lk.ro ? 'Tự lấy, ' + lk.ro : 'Liên thông với Danh sách dự án') : 'Chọn dự án để xem, nhập') + '">'
       : lk && lk.chon ? '<select class="val" data-k="val"' + (sua ? '' : ' disabled') + '>' + (v ? '' : '<option value=""></option>') + lk.chon.map(x => '<option' + (x === v ? ' selected' : '') + '>' + esc(x) + '</option>').join('') + '</select>'
-      : !lk && kieuNL(f.k) ? '<div class="val nlval' + (sua ? '' : ' xem') + '" title="' + esc(String(v).split(';').map(x => x.trim()).filter(Boolean).join('\n')) + '"><span class="nltt">' + esc(tomTatNL(kieuNL(f.k), v) || (sua ? '' : '')) + '</span>' + (sua ? '<button type="button" class="s" data-nl="' + i + '">' + (v ? ic('edit') + 'Sửa' : ic('plus') + 'Nhập') + '</button>' : '') + '</div>'
+      : !lk && kieuNL(f.k) ? '<div class="val nlval' + (sua ? '' : ' xem') + '" title="' + esc(dayDuNL(kieuNL(f.k), v)) + '"><span class="nltt">' + esc(tomTatNL(kieuNL(f.k), v) || (sua ? '' : '')) + '</span>' + (sua ? '<button type="button" class="s" data-nl="' + i + '">' + (v ? ic('edit') + 'Sửa' : ic('plus') + 'Nhập') + '</button>' : '') + '</div>'
       : !lk && laHDThue(f.k) ? '<select class="val" data-k="val"' + (sua ? '' : ' disabled') + '>' + (ttHD(v) ? '' : '<option value="" selected></option>') + TT_HD.concat(ttHD(v) && !TT_HD.includes(ttHD(v)) ? [ttHD(v)] : []).map(t => '<option' + (t === ttHD(v) ? ' selected' : '') + '>' + esc(t) + '</option>').join('') + '</select>'
       : lk && lk.id === 'thoiGianTH' && p && (tq = thangQD(p, layPM)) ? (tq.chonDuoc && sua ? '<select class="val" data-tdtheo title="Tiến độ đầu tư tính theo số liệu nào">' + ['ctdt', 'gcndt'].map(k => '<option value="' + k + '"' + (k === tq.dung ? ' selected' : '') + '>' + tq[k === 'ctdt' ? 'tA' : 'tB'] + ' tháng · theo ' + TEN_NL[k] + '</option>').join('') + '</select>'
         : '<input class="val" type="text" data-k="val" disabled value="' + esc(tq.tong + ' tháng' + (tq.lech ? ' (theo ' + TEN_NL[tq.dung] + ')' : '')) + '" title="' + esc(goiYTH(tdCua(p) || [], p)) + '">')
@@ -3090,7 +3183,7 @@ function veFields() {
       : '<input class="val' + (tuQD ? ' tudien' : '') + '" type="text" data-k="val"' + (laT ? ' data-tien inputmode="numeric" placeholder="VD: 663.989.000.000"' : '') + ' value="' + esc(v) + '"' + (tuQD ? ' title="' + (lk && lk.id === 'td8' ? 'Tự đếm theo số lần điều chỉnh trong trường QĐ chấp thuận CTĐT; sửa được' : 'Tự lấy theo ngày quyết định chấp thuận nhà đầu tư trong hồ sơ; sửa được') + '"' : '') + (!sua || khoaRO ? ' disabled' : '') + (khoaRO ? ' title="' + esc('Tự lấy, ' + (lk.ro || 'tự tính = Bắt đầu + Thời gian thực hiện ban đầu + Thời gian gia hạn')) + '"' : '') + '>';
     const g = p ? (pmGC[f.k] != null ? pmGC[f.k] : gcCua(p, f.k)) : '';
     return '<div class="frow lk' + (hien ? '' : ' off') + '"' + (cauTruc ? ' draggable="true"' : '') + ' data-i="' + i + '"><span class="drag"' + (cauTruc ? ' title="Kéo để sắp xếp"' : ' style="visibility:hidden"') + '>⋮⋮</span>'
-      + '<input type="text" data-k="name" value="' + esc(f.k) + '"' + (cauTruc && ad ? '' : ' disabled') + ' aria-label="Tên trường">' + o
+      + '<input type="text" data-k="name" value="' + esc(tenF(f)) + '"' + (cauTruc && ad ? '' : ' disabled') + ' aria-label="Tên trường">' + o
       + ((cauTruc || sua) && ad && !dvCoDinh(f) ? '<input class="dv" type="text" data-k="dv" value="' + esc(dvCua(f)) + '" placeholder="—" aria-label="Đơn vị ' + esc(f.k) + '">' : '<span class="dv">' + esc(laTien(f.k) && p && !sua ? 'tỷ đồng' : dvCua(f)) + '</span>')
       + (p || pmCheDo === 'moi' ? '<input class="gc" type="text" data-k="gc" placeholder="' + (g || sua ? 'Ghi chú' : '') + '" value="' + esc(g) + '"' + (sua ? '' : ' disabled') + ' aria-label="Ghi chú">' + '<button type="button" class="i gcnut' + (g ? ' cogc' : '') + (g || sua ? '' : ' trong') + '" data-gcnut="1" title="Ghi chú" aria-label="Ghi chú"' + (g || sua ? '' : ' tabindex="-1"') + '>' + ic('ghichu') + '</button>' : '<input class="gc" type="text" disabled placeholder="Ghi chú">')
       + '<button class="i' + (rieng ? ' on' : '') + '" data-eye="' + i + '" title="' + (hien ? 'Đang hiện' : 'Đang ẩn') + ' trong Thông tin DA' + (p ? (rieng ? ' (riêng dự án này)' : ' (theo cài đặt chung)') : '') + ', bấm để ' + (hien ? 'ẩn' : 'hiện') + '">' + ic(hien ? 'eye' : 'eyeoff') + '</button>'
@@ -3107,7 +3200,7 @@ $('#pmCore').addEventListener('input', e => { const g = e.target.closest('[data-
 $('#pmCore').addEventListener('change', () => { if (pmCheDo) pmMark(); });
 $('#pmFields').addEventListener('change', async e => { const row = e.target.closest('.frow'); if (!row || row.classList.contains('moi')) return; const f = FIELDS[+row.dataset.i]; if (!f) return;
   if (e.target.dataset.k === 'dv') { const v = e.target.value.trim(); if (v === dvCua(f) && f.dv != null) return; f.dv = v; logH('Đặt đơn vị trường thông tin', f.k + ': ' + (v || '(trống)')); hookDA('luuTruong'); toast('Đã lưu đơn vị "' + (v || '(trống)') + '" cho trường ' + f.k + ' (áp dụng mọi dự án).'); return; }
-  if (e.target.dataset.k !== 'name') return; const old = f.k, moi = e.target.value.trim();
+  if (e.target.dataset.k !== 'name') return; const old = tenF(f), moi = e.target.value.trim();
   if (!moi || moi === old) { e.target.value = old; return; } if (!(await doiTenTruongChung(khoaCuaF(f), moi))) { e.target.value = old; return; } veFields(); });
 /* Màn hẹp, chế độ xem: chạm vào dòng có chữ bị cắt để xem đủ tên trường và nội dung */
 $('#pmFields').addEventListener('click', e => { if (pmCheDo || e.target.closest('button,a,select,.nlval button')) return; const r = e.target.closest('.frow'); if (!r || !matchMedia('(max-width:1099px)').matches) return;
@@ -3141,7 +3234,7 @@ $('#pmFields').addEventListener('click', e => { const b = e.target.closest('[dat
   const cuV = k in pmSua ? pmSua[k] : giaTriTruong(p, f);
   moNhieuLan(f, p, cuV, v => { pmSua[k] = v; pmMark();
     if (kieuNL(f.k) === 'ctdt') { const l8 = LK_DS.find(l => l.id === 'td8'), hienTai = 'td8' in pmSua ? pmSua.td8 : l8 ? l8.g(p) : '', cuA = soLanDC(cuV); if (String(hienTai).trim() === '' || String(hienTai) === String(cuA)) { const a = soLanDC(v); if (a != null) pmSua.td8 = String(a); } }
-    if (['ctdt', 'gcndt'].includes(kieuNL(f.k))) { const lay = g => { const kk = 'i:' + g.k; return kk in pmSua ? pmSua[kk] : giaTriTruong(p, g); }, t = thangQD(p, lay); if (t) { if (t.bd > 0) pmSua.td15 = String(t.bd); pmSua.td14 = t.gh.join('; '); if (t.chonDuoc) setTimeout(() => hoiTheoTD(p, t, lay), 0); } }
+    if (['ctdt', 'gcndt'].includes(kieuNL(f.k))) { const lay = g => { const kk = 'i:' + g.k; return kk in pmSua ? pmSua[kk] : giaTriTruong(p, g); }, t = thangQD(p, lay); if (t) { pmSua.td15 = String(t.tong); pmSua.td14 = ''; if (t.chonDuoc) setTimeout(() => hoiTheoTD(p, t, lay), 0); } }
     const c = $('#pmCuon') ? $('#pmCuon').scrollTop : 0; veFields(); if ($('#pmCuon')) $('#pmCuon').scrollTop = c; }); });
 $('#pmFields').addEventListener('click', async e => { const eye = e.target.closest('[data-eye]'), del = e.target.closest('[data-del]');
   if (e.target.closest('[data-okmoi]')) { themDongTruong(e.target.closest('.frow')); return; }
@@ -3155,7 +3248,8 @@ $('#pmFields').addEventListener('click', async e => { const eye = e.target.close
 let dragI = null;
 $('#pmFields').addEventListener('dragstart', e => { const r = e.target.closest('.frow'); if (!r || r.classList.contains('moi')) return; dragI = +r.dataset.i; r.classList.add('dragging'); });
 $('#pmFields').addEventListener('dragover', e => e.preventDefault());
-$('#pmFields').addEventListener('drop', e => { e.preventDefault(); const r = e.target.closest('.frow'); if (!r || dragI == null || r.classList.contains('moi')) return; const to = +r.dataset.i, f = FIELDS.splice(dragI, 1)[0]; FIELDS.splice(to, 0, f); logH('Sắp xếp trường thông tin', f.k + ' → vị trí ' + (to + 1)); dragI = null; veFields(); hookDA('luuTruong'); });
+$('#pmFields').addEventListener('drop', e => { e.preventDefault(); const r = e.target.closest('.frow'); if (!r || dragI == null || r.classList.contains('moi')) return; const to = +r.dataset.i, f = FIELDS.splice(dragI, 1)[0]; FIELDS.splice(to, 0, f);
+  { const id = (lkF(f) || {}).id; if (id) { const kem = FIELDS.filter(g => g !== f && (lkF(g) || {}).id === id); kem.forEach(g => FIELDS.splice(FIELDS.indexOf(g), 1)); FIELDS.splice(FIELDS.indexOf(f) + 1, 0, ...kem); } }   /* trường trùng liên thông (VD 2 cột ngày chấp thuận NĐT) đi cùng, không nhảy về chỗ cũ */ logH('Sắp xếp trường thông tin', f.k + ' → vị trí ' + (to + 1)); dragI = null; veFields(); hookDA('luuTruong'); sapCotSheet(); });
 $('#pmFields').addEventListener('dragend', () => { dragI = null; $$('.frow.dragging').forEach(r => r.classList.remove('dragging')); });
 /* Thêm trường = thêm một dòng mới: gõ tên (và giá trị, đơn vị) rồi bấm ✓; trường mới có luôn ở Danh sách dự án */
 $('#pmAddField').onclick = () => {
@@ -3273,7 +3367,8 @@ function moFormDA(p, moi, box = $('#pmInline'), xong = null) {   // dùng chung 
     } else {
       const truoc = { ten: p.ten, duyet: p.duyet };
       if (d.duyet && !truoc.duyet && !TD.some(r => r[0] === (p.statName || p.ten))) TD.push([boTinh(d.ten), d.tinh, p.qh ? p.qh / 1e4 : null, '', '', 'Chưa hoàn thành', '', '', null, null, null, null, '', '']);
-      Object.assign(p, d); sauDoiTenDA(p, truoc.ten); if (d.duyet) tkTuInfo(p, false); if (d.duyet && !truoc.duyet) dongBoTT('TD');
+      Object.assign(p, d); sauDoiTenDA(p, truoc.ten); if (d.duyet) tkTuInfo(p, false);
+      { const k = 'KCT|' + boDau(p.ten), co = BOQUA.includes(k); if (!d.duyet && truoc.duyet && ngayQDNDT(p) && !co) { BOQUA = BOQUA.concat(k); dongBoTT('BOQUA'); } else if (d.duyet && co) { BOQUA = BOQUA.filter(z => z !== k); dongBoTT('BOQUA'); } }   // bỏ "chấp thuận NĐT" bằng tay dù có QĐ: nhớ để không tự tính lại if (d.duyet && !truoc.duyet) dongBoTT('TD');
       logH('Chỉnh sửa dự án', truoc.ten + ($('#dPrev').textContent.replace(/^Sẽ thay đổi: /, ' · ').replace(/\. Nếu một bước lỗi.*$/, '')));
       if (box.id !== 'pmCore') box.hidden = true; toast('Đã cập nhật dự án ở danh mục, tab và thư mục Drive.');
     }
@@ -3290,7 +3385,7 @@ $('#pmRen').onclick = () => { if (!pmCur) { toast('Chọn dự án cần chỉnh
 /* ===== Trường dữ liệu dùng chung: khung Thông tin dự án và bảng Danh sách dự án cùng một bộ trường;
    mỗi nơi chỉ có thứ tự và bật/tắt hiển thị riêng. Sửa tên, thêm, xóa ở nơi nào cũng áp dụng cho cả hai. ===== */
 let COT_DA = null;   // { thuTu, an (ẩn), hien (cột thêm đang hiện), ten (tên hiển thị của cột không có cột riêng), xoa (trường đã xóa) }
-const cauHinhDA = () => { const c = COT_DA && !Array.isArray(COT_DA) ? COT_DA : { thuTu: Array.isArray(COT_DA) ? COT_DA : [] };
+const cauHinhDA = () => { const c = COT_DA && !Array.isArray(COT_DA) ? COT_DA : { thuTu: Array.isArray(COT_DA) ? COT_DA : [] }; c.lkTen = c.lkTen || {};
   return { thuTu: (c.thuTu || []).slice(), an: (c.an || []).slice(), hien: (c.hien || []).concat((c.them || []).map(n => 'i:' + n)), ten: Object.assign({}, c.ten || {}), xoa: (c.xoa || []).slice(), td: (c.td || []).slice(), tdThuTu: (c.tdThuTu || []).slice() }; };
 const COT_DA_DS = [
   { k: 'ten', t: 'Dự án', w: 190, ro: 1, g: (p, r) => p ? boTinh(p.statName || p.ten) : boTinh(r[0]) },   // bỏ tiền tố tỉnh như bảng chi tiết thống kê
@@ -3314,13 +3409,16 @@ const COT_DA_DS = [
   { k: 'td15', t: TDCOL[15], w: 90, td: 15, so: 0, g: (p, r) => r ? r[15] : null },
   { k: 'td14', t: TDCOL[14], w: 90, td: 14, g: (p, r) => r ? r[14] : '' }
 ];
-const cotThemDA = n => boDau(n) === boDau(TRUONG_CTDT) ? { k: 'i:' + n, t: n, w: 130, info: n, ctdt: 1, g: p => p ? (p.info || {})[n] || '' : '' } : laQDThue(n) ? { k: 'i:' + n, t: n, w: 150, info: n, qd: 1, g: p => p ? (p.info || {})[n] || '' : '' } : laHDThue(n) ? { k: 'i:' + n, t: n, w: 100, info: n, hd: 1, g: p => p ? ttHD((p.info || {})[n]) : '' } : laThoiHan(n) ? { k: 'i:' + n, t: n, w: 90, info: n, so: 0, g: p => p ? ((p.info || {})[n] || THOIHAN_MD) : '' } : laTien(n) ? { k: 'i:' + n, t: n, w: 110, info: n, tien: 1, g: p => p ? hienTien((p.info || {})[n] || '') : '' } : ({ k: 'i:' + n, t: n, w: /link/i.test(n) ? 160 : 140, info: n, g: p => p ? (p.info || {})[n] || '' : '' });
+const cotThemDA = n => ['ctdt', 'gcndt'].includes(kieuNL(n)) ? { k: 'i:' + n, t: n, w: 170, info: n, nl: kieuNL(n), g: p => p ? tomTatNL(kieuNL(n), (p.info || {})[n] || '') : '' } : boDau(n) === boDau(TRUONG_CTDT) ? { k: 'i:' + n, t: n, w: 130, info: n, ctdt: 1, g: p => p ? (p.info || {})[n] || '' : '' } : laQDThue(n) ? { k: 'i:' + n, t: n, w: 150, info: n, qd: 1, g: p => p ? (p.info || {})[n] || '' : '' } : laHDThue(n) ? { k: 'i:' + n, t: n, w: 100, info: n, hd: 1, g: p => p ? ttHD((p.info || {})[n]) : '' } : laThoiHan(n) ? { k: 'i:' + n, t: n, w: 90, info: n, so: 0, g: p => p ? ((p.info || {})[n] || THOIHAN_MD) : '' } : laTien(n) ? { k: 'i:' + n, t: n, w: 110, info: n, tien: 1, g: p => p ? hienTien((p.info || {})[n] || '') : '' } : ({ k: 'i:' + n, t: n, w: /link/i.test(n) ? 160 : 140, info: n, g: p => p ? (p.info || {})[n] || '' : '' });
 const cotDM = key => FIELDS.find(f => !f.ao && lkCua(f.k) && lkCua(f.k).id === key);   // cột trong tab ID DM gắn với trường có sẵn
-const tenCot = c => { const d = cotDM(c.k); return d ? d.k : cauHinhDA().ten[c.k] || c.t; };
+const tenCot = c => { const t = (cauHinhDA().ten || {})[c.k]; if (t) return t; const d = cotDM(c.k); return d ? d.k : c.t; };   // tên đã đổi (cf.ten) ưu tiên
+/* Tên hiển thị của trường thông tin: trường liên thông (Diện tích DA, Tình trạng xây dựng…) đổi tên chỉ đổi tên hiển thị, không đổi tên cột trên sheet (đổi cột sẽ mất liên thông) */
+const tenF = f => (cauHinhDA().ten || {})[khoaCuaF(f)] || f.k;
 const tatCaCotDA = () => { const cf = cauHinhDA(); return COT_DA_DS.filter(c => !cf.xoa.includes(c.k)).map(c => Object.assign({}, c, { t: tenCot(c), goc: c.t, dm: cotDM(c.k) ? cotDM(c.k).k : '' }))
   .concat(FIELDS.filter(f => !f.ao && !lkCua(f.k)).map(f => cotThemDA(f.k))); };
 const cotHienDA = (c, cf) => !cf.an.includes(c.k);   // mọi trường đều có cột trong Danh sách dự án (ẩn khi tắt con mắt)
-const thuTuCotDA = caAn => { const cf = cauHinhDA(), tat = tatCaCotDA(), o = cf.thuTu.filter(k => tat.some(c => c.k === k)); const ds = o.concat(tat.map(c => c.k).filter(k => !o.includes(k))).map(k => tat.find(c => c.k === k)); const ds2 = ds.filter(c => !BO_DS_DA.includes(c.k)); return caAn ? ds2 : ds2.filter(c => cotHienDA(c, cf)); };
+const thuTuCotDA = caAn => { const cf = cauHinhDA(), tat = tatCaCotDA(), o = cf.thuTu.filter(k => tat.some(c => c.k === k)); const ds = o.concat(tat.map(c => c.k).filter(k => !o.includes(k))).map(k => tat.find(c => c.k === k)); let ds2 = ds.filter(c => !BO_DS_DA.includes(c.k)); { const i = ds2.findIndex(c => c.ck); if (i >= 0) { const nh = ds2.filter(c => c.ck); ds2 = ds2.filter(c => !c.ck); ds2.splice(i, 0, ...nh); } }   // nhóm Loại điểm trường luôn liền nhau
+  return caAn ? ds2 : ds2.filter(c => cotHienDA(c, cf)); };
 /* Danh sách dự án không hiện 2 cột Thời gian thực hiện ban đầu, Thời gian gia hạn (vẫn nhập ở Quản lý dự án / bảng tiến độ); số liệu hiện khi rê vào cột Tiến độ đầu tư */
 const BO_DS_DA = ['td15', 'td14'];
 const goiYTH = (r, p) => { if (!r) return ''; const t = p ? thangQD(p) : null;
@@ -3328,7 +3426,7 @@ const goiYTH = (r, p) => { if (!r) return ''; const t = p ? thangQD(p) : null;
     return [hienNgayTD(r[6]) ? 'Bắt đầu ' + hienNgayTD(r[6]) + (hienNgayTD(r[7]) ? ' – Kết thúc ' + hienNgayTD(r[7]) : '') : 'Chưa nhập Bắt đầu', ...mo('ctdt'), ...mo('gcndt')].join('\n'); }
   if (t) return [hienNgayTD(r[6]) ? 'Bắt đầu ' + hienNgayTD(r[6]) + (hienNgayTD(r[7]) ? ' – Kết thúc ' + hienNgayTD(r[7]) : '') : 'Chưa nhập Bắt đầu', ...t.ds.map(x => x.nhan + ' · ' + (x.lan || '') + (x.so ? ' (' + x.so + ')' : '') + ': ' + x.thang + ' tháng'), 'Tiến độ đầu tư: ' + t.tong + ' tháng'].join('\n'); const gh = giaHan(r), bd = r[15] != null && String(r[15]).trim() !== '' ? String(r[15]).trim() : '';
   return [hienNgayTD(r[6]) || hienNgayTD(r[7]) ? 'Bắt đầu ' + (hienNgayTD(r[6]) || '?') + ' – Kết thúc ' + (hienNgayTD(r[7]) || '?') : '', 'Thời gian thực hiện ban đầu: ' + (bd ? bd + ' tháng' : 'chưa nhập'), 'Thời gian gia hạn: ' + (gh.length ? gh.join(' + ') + ' tháng' + (gh.length > 1 ? ' (' + gh.length + ' lần, tổng ' + gh.reduce((a, b) => a + b, 0) + ' tháng)' : '') : 'không')].filter(Boolean).join('\n'); };
-const luuCotDA = cf => { COT_DA = { thuTu: cf.thuTu, an: cf.an, hien: [...new Set(cf.hien)], ten: cf.ten, xoa: cf.xoa, td: cf.td || [], tdThuTu: cf.tdThuTu || [] }; dongBoTT('COT_DA'); };
+const luuCotDA = cf => { COT_DA = { thuTu: cf.thuTu, an: cf.an, hien: [...new Set(cf.hien)], ten: cf.ten, xoa: cf.xoa, td: cf.td || [], tdThuTu: cf.tdThuTu || [], lkTen: cf.lkTen || {} }; dongBoTT('COT_DA'); };
 /* Khung Thông tin dự án luôn có đủ các trường chung (trường mới thêm vào cuối, đang tắt) */
 function dongBoTruong() {
   const cf = cauHinhDA();
@@ -3340,11 +3438,12 @@ const khoaCuaF = f => f.id || (lkCua(f.k) ? lkCua(f.k).id : 'i:' + f.k);
 async function doiTenTruongChung(key, moi) {
   moi = moi.trim(); const c = tatCaCotDA().find(x => x.k === key); if (!c || !moi || moi === c.t) return true;
   if (tatCaCotDA().some(x => x.k !== key && boDau(x.t) === boDau(moi)) || COT_DA_DS.some(x => x.k !== key && boDau(x.t) === boDau(moi))) { toast('Đã có trường "' + moi + '".'); return false; }
-  const cu = c.info || c.dm;
+  const dmF = /^i:/.test(c.k) ? null : cotDM(key), cu = /^i:/.test(c.k) ? c.info || c.dm : dmF ? dmF.k : null;   // có cột trên tab ID DM (kể cả trường liên thông) thì đổi luôn tên cột
   if (cu) { try { await hookDA('doiTenTruong', cu, moi); } catch (er) { toast('Chưa đổi được tên: ' + er.message.replace(/^[A-Z_]+:\s*/, '')); return false; }
-    const f = FIELDS.find(x => x.k === cu && !x.ao); if (f) f.k = moi; PROJ.forEach(p => { if (p.info && cu in p.info) { p.info[moi] = p.info[cu]; delete p.info[cu]; } });
+    const f = FIELDS.find(x => x.k === cu && !x.ao); if (f) { if (laThoiHan(f.k)) f.vai = 'thoihan'; f.k = moi; } PROJ.forEach(p => { if (p.info && cu in p.info) { p.info[moi] = p.info[cu]; delete p.info[cu]; } });
     Object.values(TRUONG_DA).forEach(m => { if (cu in m) { m[moi] = m[cu]; delete m[cu]; } }); dongBoTT('TRUONG_DA');
-    if (c.info) { const cf = cauHinhDA(), k2 = 'i:' + moi, d = k => k === key ? k2 : k; cf.thuTu = cf.thuTu.map(d); cf.an = cf.an.map(d); cf.hien = cf.hien.map(d); luuCotDA(cf); } }
+    if (c.info) { const cf = cauHinhDA(), k2 = 'i:' + moi, d = k => k === key ? k2 : k; cf.thuTu = cf.thuTu.map(d); cf.an = cf.an.map(d); cf.hien = cf.hien.map(d); luuCotDA(cf); }
+    else if (dmF) { const cf = cauHinhDA(); cf.lkTen = Object.assign({}, cf.lkTen, { [key]: moi }); if (cf.ten) delete cf.ten[key]; luuCotDA(cf); apTenLK(); } }
   else { const cf = cauHinhDA(); cf.ten[key] = moi; luuCotDA(cf); const f = FIELDS.find(x => x.id === key); if (f) { Object.values(TRUONG_DA).forEach(m => { if (f.k in m) { m[moi] = m[f.k]; delete m[f.k]; } }); f.k = moi; } }
   logH('Đổi tên trường thông tin', c.t + ' → ' + moi); hookDA('luuTruong'); return true;
 }
@@ -3427,7 +3526,7 @@ function chiTietDA() {
     if (c.pl) return '<td data-v="' + esc(v) + '">' + (p ? esc(v || '(chưa phân loại)') : '') + '</td>';
     if (v && /^https?:\/\/\S+$/i.test(String(v).trim())) { const u = String(v).trim(); return '<td data-k="' + c.k + '" data-url="' + esc(u) + '" data-v="' + esc(u) + '"' + (c.ro || roDong ? ' data-ro="1"' : '') + '><a href="' + esc(u) + '" target="_blank" rel="noopener" title="' + esc(u) + '">' + (/map|ban do/i.test(boDau(c.t)) ? 'Mở bản đồ' : 'Mở liên kết') + '</a></td>'; }
     if (c.k === 'ngayCT' && p && !p.duyet) { const t = /\d{4}/.test(String(v || '')) ? String(v) : ''; return '<td data-k="ngayCT" class="dukien"' + (t ? ' title="Thời gian chấp thuận dự kiến"' : '') + '>' + esc(t) + '</td>'; }   // chưa chấp thuận: chỉ hiện ngày dự kiến
-    return '<td data-k="' + c.k + '"' + (c.ro || roDong ? ' data-ro="1"' : '') + (c.k === 'thoiGianTH' && r ? ' title="' + esc(goiYTH(r, p)) + '"' : '') + ' class="' + (trai(c) ? 'trai' : '') + (c.so != null ? ' n' + (c.k === 'cl' && v != null && v < 3 ? ' red' : '') : '') + '">' + esc(hien(c, v)) + (c.k === 'ten' ? iQD(p) : '') + '</td>'; };
+    return '<td data-k="' + c.k + '"' + (c.ro || roDong ? ' data-ro="1"' : '') + (c.k === 'thoiGianTH' && r ? ' title="' + esc(goiYTH(r, p)) + '"' : c.nl && p ? ' title="' + esc(dayDuNL(c.nl, (p.info || {})[c.info] || '')) + '"' : '') + ' class="' + (trai(c) ? 'trai' : '') + (c.so != null ? ' n' + (c.k === 'cl' && v != null && v < 3 ? ' red' : '') : '') + '">' + esc(hien(c, v)) + (c.k === 'ten' ? iQD(p) : '') + '</td>'; };
   const head = '<colgroup><col style="width:40px">' + cot.map(c => '<col style="width:' + c.w + 'px">').join('') + '</colgroup><thead><tr><th class="c">TT</th>' + cot.map((c, j) => { const dau = c.ck && !(cot[j - 1] || {}).ck; let n = 0, w = 0; if (dau) for (let t = j; cot[t] && cot[t].ck; t++) { n++; w += cot[t].w; }
     return '<th data-cot="' + c.k + '" draggable="true" title="Bấm để sắp xếp, kéo để đổi vị trí cột"' + (c.ck ? ' class="dtc' + (dau ? ' dau' : '') + '"' : '') + '>' + (dau && n > 1 ? '<span class="nhomdt" style="width:' + w + 'px">Loại điểm trường</span>' : '') + esc(c.t) + (suaDA() && c.k !== 'ten' ? '<span class="thcc"><button type="button" class="i" data-suacot title="Sửa tên cột">' + ic('edit') + '</button><button type="button" class="i" data-ancot title="Ẩn cột">' + ic('eye') + '</button></span>' : '') + '</th>'; }).join('') + '</tr></thead>';
   const quanLyCot = '<div id="daCot" hidden class="dacot"></div>';
@@ -3494,7 +3593,7 @@ function chiTietDA() {
       cot.forEach(c => { const td = tr.querySelector('td[data-tk="' + c.k + '"]'); if (!td) return;
         if (c.k === 'ten') { const nh = tr.querySelector('td.tdnhan'); td.innerHTML = ''; nh.innerHTML = '<span><b>Tổng ' + (co ? 'đã' : 'chưa') + ' CT NĐT</b> <span class="note">(' + L.length + ' DA)</span></span>'; nh.title = 'Tổng các dự án ' + (co ? 'đã' : 'chưa') + ' chấp thuận NĐT: ' + L.length + ' dự án'; }
         else if (TONG_SO.includes(c.k)) { const v = L.reduce((a, [p, r]) => { const x = c.g(p, r); return a + (typeof x === 'number' ? x : Number(String(x || '').replace(/\./g, '').replace(',', '.')) || 0); }, 0); td.textContent = v ? fmtN(v, c.so) : ''; }
-        else if (c.tien) { const v = L.reduce((a, [p]) => a + (soTien((p.info || {})[c.info]) || 0), 0); td.textContent = v ? hienTien(v) : ''; td.title = v ? 'Tổng ' + c.t + ': ' + hienTien(v) + ' (B = tỷ đồng)' : ''; }
+        else if (c.tien) { const v = L.reduce((a, [p]) => a + (soTien((p.info || {})[c.info]) || 0), 0); td.textContent = v ? fmtB(v) : ''; td.title = v ? 'Tổng ' + c.t + ': ' + fmtB(v) + ' (B = tỷ đồng)' : ''; }
         else if (c.ctdt) { const n = L.filter(([p]) => coCTDT(p)).length; td.textContent = n || ''; td.title = n ? n + ' dự án có chủ trương đầu tư (theo cột này hoặc hồ sơ)' : ''; }
         else if (TONG_DEM.includes(c.k) || c.info && (laHDThue(c.info) || laQDThue(c.info) || /gcn/i.test(boDau(c.info)))) {   // đếm số dự án có: điểm trường, GCN, HĐ thuê đất, QĐ cho thuê đất
           const n = L.filter(([p, r]) => { const v = c.g(p, r); return c.ck ? !!v : c.hd ? daKyHD(v) : coGiaTri(v); }).length; td.textContent = n || ''; td.title = n ? n + ' dự án ' + (c.hd ? 'đã ký ' : 'có ') + c.t : '';
@@ -3565,7 +3664,12 @@ function chiTietDA() {
   th0.addEventListener('dragstart', () => { if (keo && !keoRaf) keoRaf = requestAnimationFrame(tuCuon); });
   wrapDA.addEventListener('dragover', e => { if (!keo) return; e.preventDefault(); keoX = e.clientX; const th = thTai(e.clientX); $$('#daTb th[data-cot]').forEach(h => h.classList.toggle('vthe', h === th && h.dataset.cot !== keo)); });
   wrapDA.addEventListener('drop', e => { if (!keo) return; e.preventDefault(); const th = thTai(e.clientX), k = keo; keo = null; keoX = null; if (!th || th.dataset.cot === k) { $$('#daTb th').forEach(h => h.classList.remove('dragging', 'vthe')); return; }
-    const o = thuTuCotDA(true).map(c => c.k), a = o.indexOf(k); o.splice(a, 1); const b = o.indexOf(th.dataset.cot); o.splice(b + (a > b ? 0 : 1), 0, k); const c = cauHinhDA(); c.thuTu = o; luuCotDA(c); oLai(chiTietDA); });
+    /* Nhóm Loại điểm trường (FU, FPL, FSC…) luôn đi cùng nhau: kéo 1 cột trong nhóm là chuyển cả nhóm; thả vào giữa nhóm thì đặt trước/sau cả nhóm */
+    const ds = thuTuCotDA(true), nhom = ds.filter(c => c.ck).map(c => c.k), o = ds.map(c => c.k), dich = th.dataset.cot;
+    const khoi = nhom.includes(k) ? nhom.slice().sort((x, y) => o.indexOf(x) - o.indexOf(y)) : [k]; if (khoi.includes(dich)) { oLai(chiTietDA); return; }
+    const a = o.indexOf(khoi[0]), conLai = o.filter(x => !khoi.includes(x)); let b = conLai.indexOf(nhom.includes(dich) ? (o.indexOf(dich) > a ? nhom[nhom.length - 1] : nhom[0]) : dich);
+    if (nhom.includes(dich)) { const nh = nhom.slice().sort((x, y) => o.indexOf(x) - o.indexOf(y)); b = conLai.indexOf(o.indexOf(dich) > a ? nh[nh.length - 1] : nh[0]); }
+    conLai.splice(b + (a > o.indexOf(dich) ? 0 : 1), 0, ...khoi); const c = cauHinhDA(); c.thuTu = conLai; luuCotDA(c); oLai(chiTietDA); });
   th0.addEventListener('dragend', () => { keo = null; keoX = null; $$('#daTb th').forEach(h => h.classList.remove('dragging', 'vthe')); });
 }
 $('#pmList').onclick = () => chiTietDA();
@@ -4244,12 +4348,15 @@ function moThieuDA(p, k) {
     window.CHI_XEM = ROLE === 'guest';
     PROJ.length = 0; PSV.length = 0; MOC = d.capNhat || Date.now();
     d.duAn.forEach((p, i) => { const q = { id: 'p' + i, ten: p.ten, tinh: p.tinh, vung: p.vung, info: p.info || {}, duyet: false, pl: '', loai: [], ngoaiDM: p.dm === 0 }; PROJ.push(q); PSV.push(q); });
-    TRUONG_DA = (d.tt || {}).TRUONG_DA || {}; GHICHU = (d.tt || {}).GHICHU || {}; BOQUA = (d.tt || {}).BOQUA || []; CHUCDANH = (d.tt || {}).CHUCDANH || {}; if (Array.isArray((d.tt || {}).LOAI_DT) && d.tt.LOAI_DT.length) { LOAI_DT = d.tt.LOAI_DT; apLoaiDT(); } COT_DA = (d.tt || {}).COT_DA || null;
-    { const tt0 = Array.isArray((d.tt || {}).TRUONG) ? d.tt.TRUONG : [], ds = d.truong || [], an = {}, moi = tt0.some(f => 'ds' in f); tt0.forEach((f, i) => an[boDau(f.k)] = { i, show: f.show !== false, ds: f.ds !== false, dv: f.dv });
+    TRUONG_DA = (d.tt || {}).TRUONG_DA || {}; GHICHU = (d.tt || {}).GHICHU || {}; BOQUA = (d.tt || {}).BOQUA || []; CHUCDANH = (d.tt || {}).CHUCDANH || {}; if (Array.isArray((d.tt || {}).LOAI_DT) && d.tt.LOAI_DT.length) { LOAI_DT = d.tt.LOAI_DT; apLoaiDT(); } COT_DA = (d.tt || {}).COT_DA || null; try { apTenLK(); } catch (e) { }
+    { const tt0 = Array.isArray((d.tt || {}).TRUONG) ? d.tt.TRUONG : [], ds = d.truong || [], an = {}, moi = tt0.some(f => 'ds' in f); tt0.forEach((f, i) => an[boDau(f.k)] = { i, show: f.show !== false, ds: f.ds !== false, dv: f.dv, vai: f.vai });
+      /* Thứ tự đã lưu khớp theo tên; trường liên thông đổi tên (tên lưu khác tên cột trên sheet) thì khớp theo mã liên thông, không bị đẩy xuống cuối */
+      const maLK = f => f.id || ((typeof lkCua === 'function' ? lkCua(f.k) : null) || {}).id, an2 = {}; tt0.forEach((f, i) => { const m = maLK(f); if (m && !(m in an2)) an2[m] = an[boDau(f.k)]; });
+      const cua = f => an[boDau(f.k)] || an2[maLK(f)];
       // ds: có trong khung Thông tin dự án (sau chuẩn hóa, cột mới thêm thẳng trên sheet mặc định chưa hiện); ao: trường liên kết, không có cột riêng
-      FIELDS = ds.map(k => { const a = an[boDau(k)]; return Object.assign({ k, show: a ? a.show : !/link|ghi chú nội bộ/i.test(k), ds: a ? a.ds : !moi }, a && a.dv != null ? { dv: a.dv } : {}); })   // ds: có trong khung Thông tin dự án
+      FIELDS = ds.map(k => { const a = cua({ k }); return Object.assign({ k, show: a ? a.show : !/link|ghi chú nội bộ/i.test(k), ds: a ? a.ds : !moi }, a && a.dv != null ? { dv: a.dv } : {}, a && a.vai ? { vai: a.vai } : {}); })   // ds: có trong khung Thông tin dự án
         .concat(tt0.filter(f => f.ao && !ds.some(k => boDau(k) === boDau(f.k))).map(f => Object.assign({ k: f.k, show: f.show !== false, ds: f.ds !== false, ao: true }, f.id ? { id: f.id } : {}, f.dv != null ? { dv: f.dv } : {})))
-        .sort((x, y) => ((an[boDau(x.k)] || {}).i ?? 1e6) - ((an[boDau(y.k)] || {}).i ?? 1e6)); }
+        .sort((x, y) => ((cua(x) || {}).i ?? 1e6) - ((cua(y) || {}).i ?? 1e6)); }
     DOCS.length = 0; d.docs.forEach(r => DOCS.push(docTuDong(r)));
     const tt = d.tt || {};
     if (Array.isArray(tt.TYPES)) TYPES = tt.TYPES; if (Array.isArray(tt.PHAPLY)) PHAPLY = tt.PHAPLY; if (Array.isArray(tt.CTDT)) LOAI_CTDT = tt.CTDT; else if (tt.CTDT && Array.isArray(tt.CTDT.ds)) { LOAI_CTDT = tt.CTDT.ds; if (Array.isArray(tt.CTDT.tu) && tt.CTDT.tu.length === 3) NHAN_CTDT = tt.CTDT.tu; if (Array.isArray(tt.CTDT.ndt) && tt.CTDT.ndt.length) LOAI_NDT = tt.CTDT.ndt; } if (Array.isArray(tt.CQ)) CQ_THONG_DUNG = tt.CQ.map(tachCQ).filter(c => c[0]);
@@ -4259,9 +4366,9 @@ function moThieuDA(p, k) {
     const tkDS = Object.entries(tt.TK || {}), coDM = ten => PROJ.some(q => boDau(q.ten) === boDau(ten));
     tkDS.sort((a, b) => coDM(b[0]) - coDM(a[0])).forEach(([ten, s]) => {
       let p = PROJ.find(q => boDau(q.ten) === boDau(ten));
-      if (!p) { const q = PROJ.find(q => q.duyet && boDau(q.statName || '') === boDau(ten)); if (q) return; }   // số liệu cũ ghi theo tên thống kê (VD "Uni Quảng Trị") của dự án đã có → không tạo dự án trùng
+      if (!p) { const q = PROJ.find(q => q.duyet && (boDau(q.statName || '') === boDau(ten) || boDau(q.tenTK || '') === boDau(ten))); if (q) return; }   // số liệu cũ ghi theo tên thống kê (VD "Uni Quảng Trị") của dự án đã có → không tạo dự án trùng
       if (!p) { const pt = phanTichTenTab(ten); p = { id: 'k' + PROJ.length, ten, tinh: pt.tinh, vung: pt.vung, info: {}, loai: [], pl: '', chiTK: true }; PROJ.push(p); }   // chỉ có số liệu Thống kê, chưa khớp dự án nào trong danh mục
-      Object.assign(p, { duyet: true, qh: s.qh, bg: s.bg, nam: s.nam, ngayCT: s.ngayCT || '', loai: s.loai || [], pl: s.pl || '', ctNDT: s.ctNDT || '', ctTay: !!s.ctTay, statName: s.ten2 || p.ten.replace(/^.*? - /, '') });
+      Object.assign(p, { duyet: true, qh: s.qh, bg: s.bg, nam: s.nam, ngayCT: s.ngayCT || '', loai: s.loai || [], pl: s.pl || '', ctNDT: s.ctNDT || '', ctTay: !!s.ctTay, statName: p.chiTK ? s.ten2 || p.ten.replace(/^.*? - /, '') : p.ten.replace(/^.*? - /, ''), tenTK: s.ten2 || '' });   // dự án có trong danh mục: hiện theo tên danh mục; tên cũ trong số liệu Thống kê (tenTK) giữ để khớp dòng tiến độ
     });
     PROJ.forEach(p => tkTuInfo(p, false)); window.__qdDoi = []; apNgayQD(); window.__apQDOn = true;   // ô còn trống thì lấy từ các cột Diện tích, Chấp thuận NĐT, Loại hình pháp lý của tab ID DM dự án
     if (Array.isArray(tt.TD)) TD.splice(0, TD.length, ...tt.TD);
@@ -4282,6 +4389,7 @@ function moThieuDA(p, k) {
     ['TK', 'TD', 'SAVED', 'KIEU', 'BOCUC', 'MENU', 'TIENDO', 'TYPES', 'PHAPLY', 'CTDT', 'CQ', 'TRUONG', 'TRUONG_DA', 'GHICHU', 'BOQUA', 'CHUCDANH', 'LOAI_DT', 'COT_DA'].forEach(k => daGui[k] = JSON.stringify(giaTriTT(k)));
     ['ADMINS', 'LEADERS', 'CB_DOM', 'CANBO', 'KHACH', 'CAPDA'].forEach(k => daGuiCH[k] = JSON.stringify(giaTriCH(k)));
     luuQD(true);
+    if (ROLE === 'admin') setTimeout(() => { try { suaNhamThoiHan().catch(e => console.error(e)); } catch (e) { } try { dongBoTDDanhMuc(); } catch (e) { console.error(e); } try { gopCotTrung().catch(e => console.error(e)); } catch (e) { } }, 3000);
     const v = location.hash.slice(1); if (!duocMo(v)) location.hash = '#tracuu'; else { route(); if (v === 'lichsu') setTimeout(moLichSu, 0); if (v === 'chiase') setTimeout(napChiaSe, 0); }
     if (d.loi && d.loi.length) toast('Lưu ý dữ liệu: ' + d.loi.join(' · '));
     themMenuTaiKhoan(d.capNhat);
@@ -4323,10 +4431,10 @@ function moThieuDA(p, k) {
   /* ---------- Lưu trạng thái lên máy chủ (gom lại, chỉ gửi khi có thay đổi) ---------- */
   const daGui = {}, hen = {};
   function giaTriTT(k) {
-    if (k === 'TK') return Object.fromEntries(PROJ.filter(p => p.duyet).map(p => [p.ten, { qh: p.qh, bg: p.bg, nam: p.nam, ngayCT: p.ngayCT || '', loai: p.loai || [], pl: p.pl || '', ten2: p.statName || '', ctNDT: p.ctNDT || '', ...(p.ctTay ? { ctTay: 1 } : {}) }]));
+    if (k === 'TK') return Object.fromEntries(PROJ.filter(p => p.duyet).map(p => [p.ten, { qh: p.qh, bg: p.bg, nam: p.nam, ngayCT: p.ngayCT || '', loai: p.loai || [], pl: p.pl || '', ten2: p.tenTK || p.statName || '', ctNDT: p.ctNDT || '', ...(p.ctTay ? { ctTay: 1 } : {}) }]));
     if (k === 'TD') return TD; if (k === 'SAVED') return SAVED; if (k === 'KIEU') return KIEU; if (k === 'MENU') return { thuTu: THU_TU_TAB || [], ten: TEN_TAB || {}, tieuDe: TIEU_DE || {} };
     if (k === 'BOCUC') return $$('#charts>.panel').map(p => [p.id, p.dataset.span]);
-    if (k === 'BOQUA') return BOQUA; if (k === 'CHUCDANH') return CHUCDANH; if (k === 'LOAI_DT') return LOAI_DT; if (k === 'TIENDO') return EDITORS; if (k === 'TYPES') return TYPES; if (k === 'PHAPLY') return PHAPLY; if (k === 'CTDT') return { ds: LOAI_CTDT, tu: NHAN_CTDT, ndt: LOAI_NDT }; if (k === 'CQ') return CQ_THONG_DUNG.map(ghepCQ); if (k === 'TRUONG') return FIELDS.map(f => Object.assign({ k: f.k, show: f.show, ds: f.ds !== false }, f.ao ? { ao: true, id: f.id } : {}, f.dv != null ? { dv: f.dv } : {})); if (k === 'COT_DA') return COT_DA || []; if (k === 'TRUONG_DA') return TRUONG_DA; if (k === 'GHICHU') return GHICHU;
+    if (k === 'BOQUA') return BOQUA; if (k === 'CHUCDANH') return CHUCDANH; if (k === 'LOAI_DT') return LOAI_DT; if (k === 'TIENDO') return EDITORS; if (k === 'TYPES') return TYPES; if (k === 'PHAPLY') return PHAPLY; if (k === 'CTDT') return { ds: LOAI_CTDT, tu: NHAN_CTDT, ndt: LOAI_NDT }; if (k === 'CQ') return CQ_THONG_DUNG.map(ghepCQ); if (k === 'TRUONG') return FIELDS.map(f => Object.assign({ k: f.k, show: f.show, ds: f.ds !== false }, f.ao ? { ao: true, id: f.id } : {}, f.dv != null ? { dv: f.dv } : {}, f.vai ? { vai: f.vai } : {})); if (k === 'COT_DA') return COT_DA || []; if (k === 'TRUONG_DA') return TRUONG_DA; if (k === 'GHICHU') return GHICHU;
   }
   const MO_TA_TT = { TD: ['Cập nhật tiến độ', 'Bảng kê tiến độ'], TK: ['Sửa số liệu thống kê', 'Bảng chi tiết thống kê dự án'] };
   window.__doiTenGT = (cot, cu, moi) => goi('doiTenGiaTri', { cot, cu, moi }).then(r => { if (window.__dongBo) { window.__dongBo('TYPES'); window.__dongBo('CQ'); } return r && r.n != null ? r.n : r; });
@@ -4915,6 +5023,7 @@ function moThieuDA(p, k) {
     themTruong: k => goi('themTruong', k),
     doiTenTruong: (cu, moi) => goi('doiTenTruong', cu, moi),
     xoaTruong: k => goi('xoaTruong', k),
+    sapCotDM: ds => goi('sapCotDM', ds),
     luuTruong: () => window.__dongBo('TRUONG'),
     luuThongTin: async p => { await goi('luuThongTinDA', { ten: p.ten, info: p.info }); if (p.duyet) window.__dongBo('TK'); },
     themDA: async d => { const kq = await goi('themDA', d); return { id: 'p' + kq.i, dangKy: np => { PSV[kq.i] = np; } }; },
@@ -4925,11 +5034,13 @@ function moThieuDA(p, k) {
       themTruong: k => laDeXuat() ? (deXuat('themTruong', k), Promise.resolve(true)) : g.themTruong(k),
       doiTenTruong: (cu, moi) => laDeXuat() ? (deXuat('doiTenTruong', cu, moi), Promise.resolve(true)) : g.doiTenTruong(cu, moi),
       xoaTruong: k => laDeXuat() ? (deXuat('xoaTruong', k), Promise.resolve(true)) : g.xoaTruong(k),
+      sapCotDM: ds => laDeXuat() ? Promise.resolve(true) : g.sapCotDM(ds),
       luuTruong: () => window.__dongBo('TRUONG'),
       luuThongTin: async p => { if (!laDeXuat()) return g.luuThongTin(p); deXuat('luuThongTinDA', { ten: p.ten, info: p.info }); if (p.duyet) window.__dongBo('TK'); },
       themDA: async d => laDeXuat() ? (deXuat('themDA', d), { id: 'dx' + Date.now(), dangKy: () => { } }) : g.themDA(d),
       suaDA: (d, p) => laDeXuat() ? (deXuat('suaDA', { cu: p.ten, d }), Promise.resolve(true)) : g.suaDA(d, p),
-      xoaDA: async p => { const r = await goi('xoaDA', { ten: p.ten }); napDuLieu(true); return r; }
+      xoaDA: async p => { const r = await goi('xoaDA', { ten: p.ten }); napDuLieu(true); return r; },
+      gopTab: async (x, dich) => { const r = await goi('gopTab', { tab: x.ten, dich }); napDuLieu(true); return r; }
     }; }
   /* Quản lý chia sẻ: danh sách lấy từ lần quét quyền trên Drive (tự quét mỗi tháng, hoặc bấm Quét ngay) */
   let henQuet = null;
